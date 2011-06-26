@@ -1,0 +1,28 @@
+
+# Helpful Git notes:
+#
+# In Git Bash, use "git config core.autocrlf false" to avoid unwanted changes, especially to Java source files.
+# You must do this for each project.
+
+# ignore these directories
+archive/
+build/
+dist/
+DSP/
+
+# ignore any jar file which might be in the executable directory
+*.jar
+
+# ignore any zip files in the executable directory
+*.zip
+
+# ignore all ini files
+# these change frequently and it is not useful to propagate the changes to each developer
+# for downloading the entire project from scratch, copies of these files can be found in Golden Copies of Configuration Files Etc
+
+*.ini
+
+
+# all golden copies are tracked so they can be propagated between developers
+
+!Golden Copies of Configuration Files Etc/*.*

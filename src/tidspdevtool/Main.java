@@ -162,7 +162,7 @@ mainFrame.pack();
 
 int editorWindowX = pFrame.getX() + pFrame.getWidth();
 
-String title = "Frame Title";
+String title = "Editor";
 EditorFrame eFrame =
       new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
 

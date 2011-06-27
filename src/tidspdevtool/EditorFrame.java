@@ -61,45 +61,16 @@ public EditorFrame(String pTitle, boolean pResizable, boolean pCloseable,
 
 super(pTitle, pResizable, pCloseable, pMaximizable, pIconifiable);
 
+//create a scrolling editing pane with associated components
+createEditorRig();
 
-//Create the text pane and configure it.
-textPane = new JTextPane();
-textPane.setCaretPosition(0);
-textPane.setMargin(new Insets(5,5,5,5));
-StyledDocument styledDoc = textPane.getStyledDocument();
+EditorTabPane etb = new EditorTabPane();
+etb.init();
+getContentPane().add(etb);
 
-if (styledDoc instanceof AbstractDocument) {
-    doc = (AbstractDocument)styledDoc;
-    doc.setDocumentFilter(new DocumentSizeFilter(MAX_CHARACTERS));
-    }
-else {
-    System.err.println("Text pane's document isn't an AbstractDocument!");
-    System.exit(-1);
-    }
+JPanel editorRig = createEditorRig();
 
-JScrollPane scrollPane = new JScrollPane(textPane);
-scrollPane.setPreferredSize(new Dimension(300, 350));
-
-//Create the text area for the status log and configure it.
-changeLog = new JTextArea(5, 2);
-changeLog.setEditable(false);
-JScrollPane scrollPaneForLog = new JScrollPane(changeLog);
-scrollPaneForLog.setPreferredSize(new Dimension(300, 50));
-
-//Create a split pane for the change log and the text area.
-JSplitPane splitPane = new JSplitPane(
-                                       JSplitPane.VERTICAL_SPLIT,
-                                       scrollPane, scrollPaneForLog);
-splitPane.setOneTouchExpandable(true);
-
-//Create the status area.
-JPanel statusPane = new JPanel(new GridLayout(1, 1));
-CaretListenerLabel caretListenerLabel = new CaretListenerLabel("Caret Status");
-statusPane.add(caretListenerLabel);
-
-//Add the components.
-getContentPane().add(splitPane, BorderLayout.CENTER);
-getContentPane().add(statusPane, BorderLayout.PAGE_END);
+etb.addTab("First", "This is the first.", editorRig);
 
 //Set up the menu bar.
 
@@ -123,12 +94,70 @@ addBindings();
 //initSampleDocument();
 //textPane.setCaretPosition(0);
 
+}//end of EditorFrame::EditorFrame (constructor)
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::createEditorRig
+//
+// Creates a scrolling editor pane with associated components.
+//
+// The rig is contained in a JPanel which is returned to the caller
+//
+
+private JPanel createEditorRig()
+{
+
+JPanel editorRig = new JPanel(new BorderLayout());
+
+//create the text pane and configure it
+textPane = new JTextPane();
+textPane.setCaretPosition(0);
+textPane.setMargin(new Insets(5,5,5,5));
+StyledDocument styledDoc = textPane.getStyledDocument();
+
+if (styledDoc instanceof AbstractDocument) {
+    doc = (AbstractDocument)styledDoc;
+    doc.setDocumentFilter(new DocumentSizeFilter(MAX_CHARACTERS));
+    }
+else {
+    System.err.println("Text pane's document isn't an AbstractDocument!");
+    System.exit(-1);
+    }
+
+JScrollPane scrollPane = new JScrollPane(textPane);
+scrollPane.setPreferredSize(new Dimension(300, 350));
+
+//reate the text area for the status log and configure it
+changeLog = new JTextArea(5, 2);
+changeLog.setEditable(false);
+JScrollPane scrollPaneForLog = new JScrollPane(changeLog);
+scrollPaneForLog.setPreferredSize(new Dimension(300, 50));
+
+//create a split pane for the change log and the text area
+JSplitPane splitPane = new JSplitPane(
+                                       JSplitPane.VERTICAL_SPLIT,
+                                       scrollPane, scrollPaneForLog);
+splitPane.setOneTouchExpandable(true);
+splitPane.setDividerLocation(550);
+
+//create the status area
+JPanel statusPane = new JPanel(new GridLayout(1, 1));
+CaretListenerLabel caretListenerLabel = new CaretListenerLabel("Caret Status");
+statusPane.add(caretListenerLabel);
+
+//add the components to the editor rig panel
+editorRig.add(splitPane, BorderLayout.CENTER);
+editorRig.add(statusPane, BorderLayout.PAGE_END);
+
 //Start watching for undoable edits and caret changes.
 doc.addUndoableEditListener(new MyUndoableEditListener());
 textPane.addCaretListener(caretListenerLabel);
 doc.addDocumentListener(new MyDocumentListener());
 
-}//end of EditorFrame::EditorFrame (constructor)
+return(editorRig);
+
+}//end of EditorFrame::createEditorRig
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

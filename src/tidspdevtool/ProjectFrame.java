@@ -20,13 +20,11 @@ package tidspdevtool;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
 import java.util.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
-import javax.swing.undo.*;
 import java.io.*;
 
 import javax.swing.JTree;
@@ -37,7 +35,6 @@ import javax.swing.event.TreeSelectionListener;
 import java.net.URL;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.event.TreeModelListener;
 
 

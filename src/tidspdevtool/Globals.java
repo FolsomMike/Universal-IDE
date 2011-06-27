@@ -23,6 +23,7 @@ package tidspdevtool;
 import java.io.*;
 import java.util.*;
 import javax.swing.JOptionPane;
+import java.awt.*;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -137,6 +138,23 @@ JOptionPane.showMessageDialog(null, pMessage,
 
 }//end of Globals::errorMsg
 //-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Globals::setSizes
+//
+// Sets the min, max, and preferred sizes of pComponent to pWidth and pHeight.
+//
+
+static void setSizes(Component pComponent, int pWidth, int pHeight)
+{
+
+pComponent.setMinimumSize(new Dimension(pWidth, pHeight));
+pComponent.setPreferredSize(new Dimension(pWidth, pHeight));
+pComponent.setMaximumSize(new Dimension(pWidth, pHeight));
+
+}//end of Globals::setSizes
+//-----------------------------------------------------------------------------
+
 
 }//end of class Globals
 //-----------------------------------------------------------------------------

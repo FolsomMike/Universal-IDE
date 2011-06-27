@@ -109,6 +109,8 @@ decimalFormats[0] = new  DecimalFormat("0000000");
 
 // Add internal frame to desktop
 JDesktopPane desktop = new JDesktopPane();
+desktop.setOpaque(true);
+desktop.setBackground(Color.LIGHT_GRAY);
 
 //create the program's main window
 mainFrame = new JFrame("TI DSP Dev Tool");
@@ -117,23 +119,15 @@ mainFrame.addWindowListener(this);
 
 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-//remove this section because we use BorderLayout now for desktop pane?
-//change the layout manager
-//BoxLayout boxLayout =
-//                    new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS);
-//mainFrame.setLayout(new BoxLayout(mainFrame, BoxLayout.Y_AXIS));
-//mainFrame.getContentPane().setLayout(boxLayout);
-
 //add the desktop panel to the main frame
 //the desktop panel handles child windows such that and IDE can be created
 mainFrame.getContentPane().add(desktop, BorderLayout.CENTER);
-mainFrame.setSize(500, 500);
+Globals.setSizes(mainFrame, 1024, 725);
 
 //create a main menu, passing globals as the object to be installed as
 //the action and item listener for the menu
 //mainFrame.setJMenuBar(mainMenu = new MainMenu(globals));
 
-//wipes out preset size -- mainFrame.pack();
 mainFrame.setVisible(true);
 
 //store the height and width of the main window after it has been set up so
@@ -163,12 +157,20 @@ pFrame.setVisible(true);
 
 desktop.add(pFrame);
 
+//force layout so location and width of the project window can be retrieved
+mainFrame.pack();
+
+int editorWindowX = pFrame.getX() + pFrame.getWidth();
+
 String title = "Frame Title";
 EditorFrame eFrame =
       new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
 
+// position the editor window just right of the project window
+eFrame.setLocation(new Point(editorWindowX, 0));
+
 // set an initial size for the editor window
-width = 1000; height = 1000; eFrame.setSize(width, height);
+width = 1000; height = 680; eFrame.setSize(width, height);
 
 // by default, internal frames are not visible; make it visible
 eFrame.setVisible(true);
@@ -176,6 +178,9 @@ eFrame.setVisible(true);
 desktop.add(eFrame);
 
 eFrame.loadFile("ASM Source Files//Capulin UT DSP.asm");
+
+//force layout of GUI
+mainFrame.pack();
 
 //force garbage collection before beginning any time sensitive tasks
 System.gc();

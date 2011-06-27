@@ -177,7 +177,9 @@ eFrame.setVisible(true);
 
 desktop.add(eFrame);
 
-eFrame.loadFile("ASM Source Files//Capulin UT DSP.asm");
+eFrame.loadFile("Capulin UT DSP.asm", "ASM Source Files//Capulin UT DSP.asm");
+
+eFrame.loadFile("Documentation.txt", "ASM Source Files//Documentation.txt");
 
 //force layout of GUI
 mainFrame.pack();

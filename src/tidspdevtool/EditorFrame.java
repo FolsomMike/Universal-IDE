@@ -21,6 +21,8 @@ package tidspdevtool;
 
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -28,7 +30,7 @@ import javax.swing.*;
 //
 //
 
-class EditorFrame extends JInternalFrame
+class EditorFrame extends JInternalFrame implements ChangeListener
 {
 
 EditorTabPane editorTabPane;
@@ -43,12 +45,23 @@ public EditorFrame(String pTitle, boolean pResizable, boolean pCloseable,
 
 super(pTitle, pResizable, pCloseable, pMaximizable, pIconifiable);
 
+}//end of EditorFrame::EditorFrame (constructor)
+//-----------------------------------------------------------------------------
 
-editorTabPane = new EditorTabPane();
+//-----------------------------------------------------------------------------
+// EditorFrame::init
+//
+//
+
+public void init()
+{
+
+editorTabPane = new EditorTabPane(this);
 editorTabPane.init();
+
 getContentPane().add(editorTabPane);
 
-}//end of EditorFrame::EditorFrame (constructor)
+}//end of EditorFrame::init
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -81,6 +94,30 @@ setJMenuBar(mb);
                                                            loadFile(pFullpath);
 
 }//end of EditorFrame::loadFile
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::stateChanged
+//
+// Responds to value changes in spinners, tabbed panes etc.
+//
+// You can tell which item was changed by using similar to:
+//
+// Object source = e.getSource();
+//
+
+@Override
+public void stateChanged(ChangeEvent e)
+{
+
+int i;
+
+if (e.getSource() instanceof EditorTabPane){
+    EditorTabPane etp;
+    etp = (EditorTabPane)e.getSource();
+    }
+    
+}//end of EditorFrame::stateChanged
 //-----------------------------------------------------------------------------
 
 

@@ -165,6 +165,7 @@ int editorWindowX = pFrame.getX() + pFrame.getWidth();
 String title = "Editor";
 EditorFrame eFrame =
       new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
+eFrame.init();
 
 // position the editor window just right of the project window
 eFrame.setLocation(new Point(editorWindowX, 0));

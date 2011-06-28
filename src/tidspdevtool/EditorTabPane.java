@@ -22,7 +22,7 @@ package tidspdevtool;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import java.awt.*;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -37,6 +37,7 @@ import java.awt.event.KeyEvent;
 public class EditorTabPane extends JTabbedPane{
 
 Globals globals;
+ChangeListener lChangeListener;
 
 private final int tabNumber = 5;
 JTabbedPane pane;
@@ -54,8 +55,10 @@ public ArrayList<File> EditorTabPane = new ArrayList<File>();
 // EditorTabPane::EditorTabPane (constructor)
 //
 
-EditorTabPane()
+EditorTabPane(ChangeListener pChangeListener)
 {
+
+lChangeListener = pChangeListener;
 
 }//end of EditorTabPane::EditorTabPane (constructor)
 //-----------------------------------------------------------------------------
@@ -70,6 +73,9 @@ public void init()
 {
 
 pane = this;
+
+setName("Editor Tab Panel");
+addChangeListener(lChangeListener);
 
 initMenu();
 

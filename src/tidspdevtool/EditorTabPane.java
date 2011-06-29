@@ -110,12 +110,6 @@ tabComponentsItem.setSelected(true);
 pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
 scrollLayoutItem.setSelected(false);
 
-//debug mks - remove this
-//setSize(new Dimension(400, 200));
-//setLocationRelativeTo(null);
-//setVisible(true);
-//debug mks
-
 }//end of EditorTabPane::debugTest
 //-----------------------------------------------------------------------------
 

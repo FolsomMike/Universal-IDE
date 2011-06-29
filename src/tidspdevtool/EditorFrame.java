@@ -20,10 +20,11 @@
 package tidspdevtool;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.undo.*;
-import javax.swing.text.*;
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -39,10 +40,6 @@ EditorTabPane editorTabPane;
 private UndoAction undoAction;
 private RedoAction redoAction;
 MyUndoableEditListener myUndoableEditListener;
-
-//undo manager -- handles undo/redo actions
-public UndoManager undo = new UndoManager();
-
 
 //-----------------------------------------------------------------------------
 // EditorFrame::EditorFrame (constructor)
@@ -112,6 +109,50 @@ setJMenuBar(mb);
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+// EditorFrame::getSelectedUndoMgr
+//
+// Returns the undo manager for the document in the EditorRig on the currently
+// selected tab.
+//
+// A single undo manager can handle multiple documents, but this causes
+// annoying behavior -- the user can be viewing one document and using the
+// undo action will undo the last change made, which might be to a different
+// document altogether.
+//
+// NOTE: The undo manager is able to keep the changes to the different
+// documents separate because calls by the documents to UndoableEditListener
+// pass references to the documents themselves.  Thus the a reference to the
+// modified document is stored with each change -- when the UndoManager is then
+// told to undo a change, it applies each undo back to the appropriate doc.
+//
+// For this program, a separate undo manager is created for each EditorRig and
+// thus for each document.  When any document is modified and
+// UndoableEditListener is called, the changes are stored in the undo manager
+// associated with the currently visible document.  Likewise, when the user
+// actives an undo/redo function, the undo manager for the currently visible
+// document is used.  This keeps changes for each document separate which is
+// the generally expected behavior for an IDE.
+//
+// Returns a reference to the currently selected UndoManager if possible.
+// Returns null if there is an error.
+//
+
+private UndoManager getSelectedUndoMgr()
+{
+
+//get the undo manager for the currently selected document
+
+Component p = editorTabPane.getSelectedComponent();
+//do nothing if selected component is not an EditorRig
+if (!(p instanceof EditorRig)) return(null);
+EditorRig er = (EditorRig)p;
+
+return(er.undo);
+
+}//end of EditorFrame::getSelectedUndoMgr
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // EditorFrame::stateChanged
 //
 // Responds to value changes in spinners, tabbed panes etc.
@@ -125,11 +166,18 @@ setJMenuBar(mb);
 public void stateChanged(ChangeEvent e)
 {
 
-int i;
-
 if (e.getSource() instanceof EditorTabPane){
     EditorTabPane etp;
     etp = (EditorTabPane)e.getSource();
+
+    //get the undo manager for the currently selected document
+    UndoManager undo = getSelectedUndoMgr();
+    if (undo == null) return;
+
+    //update the menus to show the last type of change made
+    undoAction.updateUndoState(undo);
+    redoAction.updateRedoState(undo);
+
     }
     
 }//end of EditorFrame::stateChanged
@@ -162,9 +210,10 @@ setEnabled(false);
 
 public void actionPerformed(ActionEvent e)
 {
-    
-//do nothing if triggering object is not an AbstractDocument
-//if (!(e.getSource() instanceof AbstractDocument)) return;
+
+//get the undo manager for the currently selected document
+UndoManager undo = getSelectedUndoMgr();
+if (undo == null) return;
 
 try {
     undo.undo();
@@ -234,6 +283,10 @@ setEnabled(false);
 public void actionPerformed(ActionEvent e)
 {
 
+//get the undo manager for the currently selected document
+UndoManager undo = getSelectedUndoMgr();
+if (undo == null) return;
+
 try {
     undo.redo();
     }
@@ -286,14 +339,15 @@ protected class MyUndoableEditListener implements UndoableEditListener {
 
 public void undoableEditHappened(UndoableEditEvent e) {
 
-//Remember the edit and update the menus.
+//get the undo manager for the currently selected document
+UndoManager undo = getSelectedUndoMgr();
+if (undo == null) return;
+
+//remember the edit and update the menus to show the last type of change made
 
 undo.addEdit(e.getEdit());
 undoAction.updateUndoState(undo);
 redoAction.updateRedoState(undo);
-
-int i = 0;
-i++;
 
 }//end of MyUndoableEditListener::undoableEditHappened
 //-----------------------------------------------------------------------------

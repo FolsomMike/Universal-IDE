@@ -42,6 +42,8 @@ static final int MAX_CHARACTERS = 1000000;
 String newline = "\n";
 
 //undo manager -- handles undo/redo actions
+//each EditorRig, and thus each document, will have its own undo manager so
+//changes can be tracked separately for each
 public UndoManager undo = new UndoManager();
 
 JTextPane textPane;
@@ -114,8 +116,6 @@ add(statusPane, BorderLayout.PAGE_END);
 
 //Start watching for undoable edits and caret changes.
 doc.addUndoableEditListener(pUndoableEditListener);
-
-//doc.addUndoableEditListener(new MyUndoableEditListener());
 
 textPane.addCaretListener(caretListenerLabel);
 doc.addDocumentListener(new MyDocumentListener());

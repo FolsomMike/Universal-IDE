@@ -41,10 +41,8 @@ public class EditorRig extends JPanel{
 static final int MAX_CHARACTERS = 1000000;
 String newline = "\n";
 
-//undo helpers
-private UndoAction undoAction;
-private RedoAction redoAction;
-private UndoManager undo = new UndoManager();
+//undo manager -- handles undo/redo actions
+public UndoManager undo = new UndoManager();
 
 JTextPane textPane;
 AbstractDocument doc = null;
@@ -71,7 +69,7 @@ super(new BorderLayout());
 // The rig is contained in a JPanel which is returned to the caller
 //
 
-public void init()
+public void init(UndoableEditListener pUndoableEditListener)
 {
 
 //create the text pane and configure it
@@ -115,17 +113,15 @@ add(splitPane, BorderLayout.CENTER);
 add(statusPane, BorderLayout.PAGE_END);
 
 //Start watching for undoable edits and caret changes.
-doc.addUndoableEditListener(new MyUndoableEditListener());
+doc.addUndoableEditListener(pUndoableEditListener);
+
+//doc.addUndoableEditListener(new MyUndoableEditListener());
+
 textPane.addCaretListener(caretListenerLabel);
 doc.addDocumentListener(new MyDocumentListener());
 
 // create a list of actions available for the text editor component
 actions = createActionTable(textPane);
-
-//undo and redo are actions of our own creation -- these actions are used
-//by the editor pane and the menu
-undoAction = new UndoAction();
-redoAction = new RedoAction();
 
 //add key bindings -- connects keyboard shortcuts to actions
 addBindings();
@@ -174,13 +170,14 @@ inputMap.put(key, DefaultEditorKit.downAction);
 // editor kit for the text editor component.
 //
 
-public JMenu createEditMenu() {
+public JMenu createEditMenu(
+                      AbstractAction pUndoAction, AbstractAction pRedoAction) {
 
 JMenu menu = new JMenu("Edit");
 
 //use the custom actions for the menu
-menu.add(undoAction);
-menu.add(redoAction);
+menu.add(pUndoAction);
+menu.add(pRedoAction);
 
 menu.addSeparator();
 
@@ -494,6 +491,20 @@ sDoc.setParagraphAttributes(0, doc.getLength() + 1, attrs, false);
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+// EditorRig::setJTextPaneFont
+//
+// Sets the font for the entire contents of pJTextPane.
+//
+// WIP -- need to add ability to change font from current position onward?
+//
+
+public void findTabContainingDoc(JTextPane jtp, Font font, Color c) {
+
+
+}//end of EditorRig::findTabContaingingDoc
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class CaretListenerLabel
 //
@@ -572,34 +583,6 @@ SwingUtilities.invokeLater(
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class MyUndoableEditListener
-//
-// This one listens for edits that can be undone.
-//
-
-protected class MyUndoableEditListener implements UndoableEditListener {
-
-//-----------------------------------------------------------------------------
-// MyUndoableEditListener::undoableEditHappened
-//
-
-public void undoableEditHappened(UndoableEditEvent e) {
-
-//Remember the edit and update the menus.
-
-undo.addEdit(e.getEdit());
-undoAction.updateUndoState();
-redoAction.updateRedoState();
-
-}//end of MyUndoableEditListener::undoableEditHappened
-//-----------------------------------------------------------------------------
-
-}//end of class MyUndoableEditListener
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 // class MyDocumentListener
 //
 // And this one listens for any changes to the document.
@@ -663,138 +646,7 @@ changeLog.append(e.getType().toString() + ": " +
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// class UndoAction
-//
-//
 
-class UndoAction extends AbstractAction {
-
-//-----------------------------------------------------------------------------
-// UndoAction::UndoAction (constructor)
-//
-
-public UndoAction()
-{
-
-super("Undo");
-setEnabled(false);
-
-}//end of UndoAction::UndoAction (constructor)
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// UndoAction::actionPerformed
-//
-
-public void actionPerformed(ActionEvent e)
-{
-
-try {
-    undo.undo();
-    }
-catch (CannotUndoException ex) {
-    System.out.println("Unable to undo: " + ex);
-    //for debugging add this -> ex.printStackTrace();
-    }
-
-updateUndoState();
-redoAction.updateRedoState();
-
-}//end of UndoAction::actionPerformed
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// UndoAction::updateUndoState
-//
-
-protected void updateUndoState()
-{
-
-if (undo.canUndo()) {
-    setEnabled(true);
-    putValue(Action.NAME, undo.getUndoPresentationName());
-    }
-else {
-    setEnabled(false);
-    putValue(Action.NAME, "Undo");
-    }
-
-}//end of UndoAction::updateUndoState
-//-----------------------------------------------------------------------------
-
-}//end of class UndoAction
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// class RedoAction
-//
-//
-
-class RedoAction extends AbstractAction {
-
-
-//-----------------------------------------------------------------------------
-// RedoAction::RedoAction (constructor)
-//
-
-
-public RedoAction()
-{
-
-super("Redo");
-
-setEnabled(false);
-
-}//end of RedoAction::RedoAction (constructor)
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// RedoAction::actionPerformed
-//
-
-public void actionPerformed(ActionEvent e)
-{
-
-try {
-    undo.redo();
-    }
-catch (CannotRedoException ex) {
-        System.out.println("Unable to redo: " + ex);
-        //for debugging add this -> ex.printStackTrace();
-        }
-
-updateRedoState();
-undoAction.updateUndoState();
-
-}//end of RedoAction::actionPerformed
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// RedoAction::updateRedoState
-//
-
-protected void updateRedoState()
-{
-
-if (undo.canRedo()) {
-    setEnabled(true);
-    putValue(Action.NAME, undo.getRedoPresentationName());
-    }
-else {
-    setEnabled(false);
-    putValue(Action.NAME, "Redo");
-    }
-
-}//end of RedoAction::updateRedoState
-//-----------------------------------------------------------------------------
-
-}//end of class RedoAction
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 
 }//end of class EditorRig
 //-----------------------------------------------------------------------------

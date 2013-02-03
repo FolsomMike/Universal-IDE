@@ -19,9 +19,9 @@
 
 package tidspdevtool;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.undo.*;
 
@@ -35,11 +35,11 @@ import javax.swing.undo.*;
 class EditorFrame extends JInternalFrame implements ChangeListener
 {
 
-EditorTabPane editorTabPane;
+    EditorTabPane editorTabPane;
 
-private UndoAction undoAction;
-private RedoAction redoAction;
-MyUndoableEditListener myUndoableEditListener;
+    private UndoAction undoAction;
+    private RedoAction redoAction;
+    MyUndoableEditListener myUndoableEditListener;
 
 //-----------------------------------------------------------------------------
 // EditorFrame::EditorFrame (constructor)
@@ -49,7 +49,7 @@ MyUndoableEditListener myUndoableEditListener;
 public EditorFrame(String pTitle, boolean pResizable, boolean pCloseable,
                                    boolean pMaximizable, boolean pIconifiable) {
 
-super(pTitle, pResizable, pCloseable, pMaximizable, pIconifiable);
+    super(pTitle, pResizable, pCloseable, pMaximizable, pIconifiable);
 
 }//end of EditorFrame::EditorFrame (constructor)
 //-----------------------------------------------------------------------------
@@ -62,16 +62,16 @@ super(pTitle, pResizable, pCloseable, pMaximizable, pIconifiable);
 public void init()
 {
 
-//undo and redo are actions of our own creation -- these actions are used
-//by the editor pane and the menu
-undoAction = new UndoAction();
-redoAction = new RedoAction();
-myUndoableEditListener = new MyUndoableEditListener();
+    //undo and redo are actions of our own creation -- these actions are used
+    //by the editor pane and the menu
+    undoAction = new UndoAction();
+    redoAction = new RedoAction();
+    myUndoableEditListener = new MyUndoableEditListener();
 
-editorTabPane = new EditorTabPane(this);
-editorTabPane.init();
+    editorTabPane = new EditorTabPane(this);
+    editorTabPane.init();
 
-getContentPane().add(editorTabPane);
+    getContentPane().add(editorTabPane);
 
 }//end of EditorFrame::init
 //-----------------------------------------------------------------------------
@@ -85,24 +85,24 @@ getContentPane().add(editorTabPane);
 public void loadFile(String pFileName, String pFullpath)
 {
 
-//create a scrolling editing pane with associated components
-EditorRig editorRig = new EditorRig();
-editorRig.init(myUndoableEditListener);
+    //create a scrolling editing pane with associated components
+    EditorRig editorRig = new EditorRig();
+    editorRig.init(myUndoableEditListener);
 
-editorTabPane.addTab(pFileName, pFullpath, editorRig);
+    editorTabPane.addTab(pFileName, pFullpath, editorRig);
 
-//Set up the menu bar.
+    //Set up the menu bar.
 
-JMenu editMenu = editorRig.createEditMenu(undoAction, redoAction);
-JMenu styleMenu = editorRig.createStyleMenu();
-JMenuBar mb = new JMenuBar();
-mb.add(editMenu);
-mb.add(styleMenu);
-setJMenuBar(mb);
+    JMenu editMenu = editorRig.createEditMenu(undoAction, redoAction);
+    JMenu styleMenu = editorRig.createStyleMenu();
+    JMenuBar mb = new JMenuBar();
+    mb.add(editMenu);
+    mb.add(styleMenu);
+    setJMenuBar(mb);
 
-//get the EditorRig component on the last tab in the list, which would be the
-//one just created above
-((EditorRig)editorTabPane.getComponentAt(editorTabPane.getTabCount()-1)).
+    //get the EditorRig component on the last tab in the list, which would be
+    //the one just created above
+    ((EditorRig)editorTabPane.getComponentAt(editorTabPane.getTabCount()-1)).
                                                            loadFile(pFullpath);
 
 }//end of EditorFrame::loadFile
@@ -140,14 +140,14 @@ setJMenuBar(mb);
 private UndoManager getSelectedUndoMgr()
 {
 
-//get the undo manager for the currently selected document
+    //get the undo manager for the currently selected document
 
-Component p = editorTabPane.getSelectedComponent();
-//do nothing if selected component is not an EditorRig
-if (!(p instanceof EditorRig)) return(null);
-EditorRig er = (EditorRig)p;
+    Component p = editorTabPane.getSelectedComponent();
+    //do nothing if selected component is not an EditorRig
+    if (!(p instanceof EditorRig)) {return(null);}
+    EditorRig er = (EditorRig)p;
 
-return(er.undo);
+    return(er.undo);
 
 }//end of EditorFrame::getSelectedUndoMgr
 //-----------------------------------------------------------------------------
@@ -166,20 +166,21 @@ return(er.undo);
 public void stateChanged(ChangeEvent e)
 {
 
-if (e.getSource() instanceof EditorTabPane){
-    EditorTabPane etp;
-    etp = (EditorTabPane)e.getSource();
+    if (e.getSource() instanceof EditorTabPane){
 
-    //get the undo manager for the currently selected document
-    UndoManager undo = getSelectedUndoMgr();
-    if (undo == null) return;
+        EditorTabPane etp;
+        etp = (EditorTabPane)e.getSource();
 
-    //update the menus to show the last type of change made
-    undoAction.updateUndoState(undo);
-    redoAction.updateRedoState(undo);
+        //get the undo manager for the currently selected document
+        UndoManager undo = getSelectedUndoMgr();
+        if (undo == null) {return;}
+
+        //update the menus to show the last type of change made
+        undoAction.updateUndoState(undo);
+        redoAction.updateRedoState(undo);
 
     }
-    
+
 }//end of EditorFrame::stateChanged
 //-----------------------------------------------------------------------------
 
@@ -198,8 +199,8 @@ class UndoAction extends AbstractAction {
 public UndoAction()
 {
 
-super("Undo");
-setEnabled(false);
+    super("Undo");
+    setEnabled(false);
 
 }//end of UndoAction::UndoAction (constructor)
 //-----------------------------------------------------------------------------
@@ -211,20 +212,20 @@ setEnabled(false);
 public void actionPerformed(ActionEvent e)
 {
 
-//get the undo manager for the currently selected document
-UndoManager undo = getSelectedUndoMgr();
-if (undo == null) return;
+    //get the undo manager for the currently selected document
+    UndoManager undo = getSelectedUndoMgr();
+    if (undo == null) {return;}
 
-try {
-    undo.undo();
+    try {
+        undo.undo();
     }
-catch (CannotUndoException ex) {
-    System.out.println("Unable to undo: " + ex);
-    //for debugging add this -> ex.printStackTrace();
+    catch (CannotUndoException ex) {
+        System.out.println("Unable to undo: " + ex);
+        //for debugging add this -> ex.printStackTrace();
     }
 
-updateUndoState(undo);
-redoAction.updateRedoState(undo);
+    updateUndoState(undo);
+    redoAction.updateRedoState(undo);
 
 }//end of UndoAction::actionPerformed
 //-----------------------------------------------------------------------------
@@ -236,13 +237,13 @@ redoAction.updateRedoState(undo);
 protected void updateUndoState(UndoManager pUndo)
 {
 
-if (pUndo.canUndo()) {
-    setEnabled(true);
-    putValue(Action.NAME, pUndo.getUndoPresentationName());
+    if (pUndo.canUndo()) {
+        setEnabled(true);
+        putValue(Action.NAME, pUndo.getUndoPresentationName());
     }
-else {
-    setEnabled(false);
-    putValue(Action.NAME, "Undo");
+    else {
+        setEnabled(false);
+        putValue(Action.NAME, "Undo");
     }
 
 }//end of UndoAction::updateUndoState
@@ -269,9 +270,9 @@ class RedoAction extends AbstractAction {
 public RedoAction()
 {
 
-super("Redo");
+    super("Redo");
 
-setEnabled(false);
+    setEnabled(false);
 
 }//end of RedoAction::RedoAction (constructor)
 //-----------------------------------------------------------------------------
@@ -283,20 +284,20 @@ setEnabled(false);
 public void actionPerformed(ActionEvent e)
 {
 
-//get the undo manager for the currently selected document
-UndoManager undo = getSelectedUndoMgr();
-if (undo == null) return;
+    //get the undo manager for the currently selected document
+    UndoManager undo = getSelectedUndoMgr();
+    if (undo == null) {return;}
 
-try {
-    undo.redo();
-    }
-catch (CannotRedoException ex) {
-        System.out.println("Unable to redo: " + ex);
-        //for debugging add this -> ex.printStackTrace();
+    try {
+        undo.redo();
         }
+    catch (CannotRedoException ex) {
+            System.out.println("Unable to redo: " + ex);
+            //for debugging add this -> ex.printStackTrace();
+    }
 
-updateRedoState(undo);
-undoAction.updateUndoState(undo);
+    updateRedoState(undo);
+    undoAction.updateUndoState(undo);
 
 }//end of RedoAction::actionPerformed
 //-----------------------------------------------------------------------------
@@ -308,13 +309,13 @@ undoAction.updateUndoState(undo);
 protected void updateRedoState(UndoManager pUndo)
 {
 
-if (pUndo.canRedo()) {
-    setEnabled(true);
-    putValue(Action.NAME, pUndo.getRedoPresentationName());
+    if (pUndo.canRedo()) {
+        setEnabled(true);
+        putValue(Action.NAME, pUndo.getRedoPresentationName());
     }
-else {
-    setEnabled(false);
-    putValue(Action.NAME, "Redo");
+    else {
+        setEnabled(false);
+        putValue(Action.NAME, "Redo");
     }
 
 }//end of RedoAction::updateRedoState
@@ -339,15 +340,15 @@ protected class MyUndoableEditListener implements UndoableEditListener {
 
 public void undoableEditHappened(UndoableEditEvent e) {
 
-//get the undo manager for the currently selected document
-UndoManager undo = getSelectedUndoMgr();
-if (undo == null) return;
+    //get the undo manager for the currently selected document
+    UndoManager undo = getSelectedUndoMgr();
+    if (undo == null) {return;}
 
-//remember the edit and update the menus to show the last type of change made
+    //remember the edit and update the menus to show last type of change made
 
-undo.addEdit(e.getEdit());
-undoAction.updateUndoState(undo);
-redoAction.updateRedoState(undo);
+    undo.addEdit(e.getEdit());
+    undoAction.updateUndoState(undo);
+    redoAction.updateRedoState(undo);
 
 }//end of MyUndoableEditListener::undoableEditHappened
 //-----------------------------------------------------------------------------

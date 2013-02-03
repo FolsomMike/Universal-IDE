@@ -19,8 +19,8 @@
 
 package tidspdevtool;
 
-import javax.swing.text.*;
 import java.awt.Toolkit;
+import javax.swing.text.*;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -34,45 +34,71 @@ public class DocumentSizeFilter extends DocumentFilter {
     int maxCharacters;
     boolean DEBUG = false;
 
-    public DocumentSizeFilter(int maxChars) {
-        maxCharacters = maxChars;
+//-----------------------------------------------------------------------------
+// DocumentSizeFilter::DocumentSizeFilter (constuctor)
+//
+
+
+public DocumentSizeFilter(int maxChars)
+{
+    maxCharacters = maxChars;
+
+}//end of DocumentSizeFilter::DocumentSizeFilter (constructor)
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// DocumentSizeFilter::insertString
+//
+
+public void insertString(FilterBypass fb, int offs,
+                         String str, AttributeSet a)
+                                            throws BadLocationException
+{
+
+    if (DEBUG) {
+        System.out.println("in DocumentSizeFilter's insertString method");
     }
 
-    public void insertString(FilterBypass fb, int offs,
-                             String str, AttributeSet a)
-        throws BadLocationException {
-        if (DEBUG) {
-            System.out.println("in DocumentSizeFilter's insertString method");
-        }
-
-        //This rejects the entire insertion if it would make
-        //the contents too long. Another option would be
-        //to truncate the inserted string so the contents
-        //would be exactly maxCharacters in length.
-        if ((fb.getDocument().getLength() + str.length()) <= maxCharacters)
+    //This rejects the entire insertion if it would make
+    //the contents too long. Another option would be
+    //to truncate the inserted string so the contents
+    //would be exactly maxCharacters in length.
+    if ((fb.getDocument().getLength() + str.length()) <= maxCharacters) {
             super.insertString(fb, offs, str, a);
-        else
+    }
+    else {
             Toolkit.getDefaultToolkit().beep();
     }
 
-    public void replace(FilterBypass fb, int offs,
-                        int length,
-                        String str, AttributeSet a)
-        throws BadLocationException {
-        if (DEBUG) {
-            System.out.println("in DocumentSizeFilter's replace method");
-        }
-        //This rejects the entire replacement if it would make
-        //the contents too long. Another option would be
-        //to truncate the replacement string so the contents
-        //would be exactly maxCharacters in length.
-        if ((fb.getDocument().getLength() + str.length()
-             - length) <= maxCharacters)
+}//end of DocumentSizeFilter::insertString
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// DocumentSizeFilter::replace
+//
+
+@Override
+public void replace(FilterBypass fb, int offs,
+                        int length, String str, AttributeSet a)
+                                                throws BadLocationException {
+
+    if (DEBUG) {
+        System.out.println("in DocumentSizeFilter's replace method");
+    }
+    //This rejects the entire replacement if it would make
+    //the contents too long. Another option would be
+    //to truncate the replacement string so the contents
+    //would be exactly maxCharacters in length.
+    if ((fb.getDocument().getLength() + str.length()
+         - length) <= maxCharacters) {
             super.replace(fb, offs, length, str, a);
-        else
+    }
+    else {
             Toolkit.getDefaultToolkit().beep();
     }
 
+}//end of DocumentSizeFilter::replace
+//-----------------------------------------------------------------------------
 
 }//end of class DocumentSizeFilter
 //-----------------------------------------------------------------------------

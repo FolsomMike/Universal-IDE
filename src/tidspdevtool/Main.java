@@ -24,19 +24,18 @@ package tidspdevtool;
 
 
 import java.awt.*;
-import javax.swing.*;
-import java.text.DecimalFormat;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.ChangeListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.text.DecimalFormat;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.JDialog;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
 //-----------------------------------------------------------------------------
@@ -83,110 +82,111 @@ public MainWindow()
 public void init()
 {
 
-//turn off default bold for Metal look and feel
-UIManager.put("swing.boldMetal", Boolean.FALSE);
+    //turn off default bold for Metal look and feel
+    UIManager.put("swing.boldMetal", Boolean.FALSE);
 
-//force "look and feel" to the System's default style
-// getCrossPlatformLookAndFeelClassName() -- this is the "Metal" look
-// getSystemLookAndFeelClassName() -- uses the look from the System
-//   (the System style matches Windows, Mac, Linux, etc.)
+    //force "look and feel" to the System's default style
+    // getCrossPlatformLookAndFeelClassName() -- this is the "Metal" look
+    // getSystemLookAndFeelClassName() -- uses the look from the System
+    //   (the System style matches Windows, Mac, Linux, etc.)
 
-try {
-    UIManager.setLookAndFeel(
-        UIManager.getSystemLookAndFeelClassName());
-    }
-catch (Exception e) {}
+    try {
+        UIManager.setLookAndFeel(
+            UIManager.getSystemLookAndFeelClassName());
+        }
+    catch (Exception e) {}
 
-//makes sure all frames are created with the look and feel specified above
-JFrame.setDefaultLookAndFeelDecorated(true);
+    //makes sure all frames are created with the look and feel specified above
+    JFrame.setDefaultLookAndFeelDecorated(true);
 
-//load globals, project file, and all other settings
-loadSettings();
+    //load globals, project file, and all other settings
+    loadSettings();
 
-//create various decimal formats
-decimalFormats = new DecimalFormat[1];
-decimalFormats[0] = new  DecimalFormat("0000000");
+    //create various decimal formats
+    decimalFormats = new DecimalFormat[1];
+    decimalFormats[0] = new  DecimalFormat("0000000");
 
-// Add internal frame to desktop
-JDesktopPane desktop = new JDesktopPane();
-desktop.setOpaque(true);
-desktop.setBackground(Color.LIGHT_GRAY);
+    // Add internal frame to desktop
+    JDesktopPane desktop = new JDesktopPane();
+    desktop.setOpaque(true);
+    desktop.setBackground(Color.LIGHT_GRAY);
 
-//create the program's main window
-mainFrame = new JFrame("TI DSP Dev Tool");
-mainFrame.addComponentListener(this);
-mainFrame.addWindowListener(this);
+    //create the program's main window
+    mainFrame = new JFrame("TI DSP Dev Tool");
+    mainFrame.addComponentListener(this);
+    mainFrame.addWindowListener(this);
 
-mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-//add the desktop panel to the main frame
-//the desktop panel handles child windows such that and IDE can be created
-mainFrame.getContentPane().add(desktop, BorderLayout.CENTER);
-Globals.setSizes(mainFrame, 1024, 725);
+    //add the desktop panel to the main frame
+    //the desktop panel handles child windows such that and IDE can be created
+    mainFrame.getContentPane().add(desktop, BorderLayout.CENTER);
+    Globals.setSizes(mainFrame, 1024, 725);
 
-//create a main menu, passing globals as the object to be installed as
-//the action and item listener for the menu
-//mainFrame.setJMenuBar(mainMenu = new MainMenu(globals));
+    //create a main menu, passing globals as the object to be installed as
+    //the action and item listener for the menu
+    //mainFrame.setJMenuBar(mainMenu = new MainMenu(globals));
 
-mainFrame.setVisible(true);
+    mainFrame.setVisible(true);
 
-//store the height and width of the main window after it has been set up so
-//it can be restored to this size if an attempt is made to resize it
-initialWidth = mainFrame.getWidth();
-initialHeight = mainFrame.getHeight();
+    //store the height and width of the main window after it has been set up so
+    //it can be restored to this size if an attempt is made to resize it
+    initialWidth = mainFrame.getWidth();
+    initialHeight = mainFrame.getHeight();
 
-// Create an internal frame
-boolean resizable = true;
-boolean closeable = true;
-boolean maximizable  = true;
-boolean iconifiable = true;
+    // Create an internal frame
+    boolean resizable = true;
+    boolean closeable = true;
+    boolean maximizable  = true;
+    boolean iconifiable = true;
 
-int width, height;
+    int width, height;
 
-ProjectFrame pFrame =
-    new ProjectFrame("Project", resizable, closeable, maximizable, iconifiable,
-                                                                      globals);
+    ProjectFrame pFrame =
+        new ProjectFrame("Project", resizable, closeable, maximizable,
+            iconifiable, globals);
 
-pFrame.init();
+    pFrame.init();
 
-// set an initial size for the project window
-width = 200; height = 500; pFrame.setSize(width, height);
+    // set an initial size for the project window
+    width = 200; height = 500; pFrame.setSize(width, height);
 
-// by default, internal frames are not visible; make it visible
-pFrame.setVisible(true);
+    // by default, internal frames are not visible; make it visible
+    pFrame.setVisible(true);
 
-desktop.add(pFrame);
+    desktop.add(pFrame);
 
-//force layout so location and width of the project window can be retrieved
-mainFrame.pack();
+    //force layout so location and width of the project window can be retrieved
+    mainFrame.pack();
 
-int editorWindowX = pFrame.getX() + pFrame.getWidth();
+    int editorWindowX = pFrame.getX() + pFrame.getWidth();
 
-String title = "Editor";
-EditorFrame eFrame =
-      new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
-eFrame.init();
+    String title = "Editor";
+    EditorFrame eFrame =
+        new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
+    eFrame.init();
 
-// position the editor window just right of the project window
-eFrame.setLocation(new Point(editorWindowX, 0));
+    // position the editor window just right of the project window
+    eFrame.setLocation(new Point(editorWindowX, 0));
 
-// set an initial size for the editor window
-width = 1000; height = 680; eFrame.setSize(width, height);
+    // set an initial size for the editor window
+    width = 1000; height = 680; eFrame.setSize(width, height);
 
-// by default, internal frames are not visible; make it visible
-eFrame.setVisible(true);
+    // by default, internal frames are not visible; make it visible
+    eFrame.setVisible(true);
 
-desktop.add(eFrame);
+    desktop.add(eFrame);
 
-eFrame.loadFile("Capulin UT DSP.asm", "ASM Source Files//Capulin UT DSP.asm");
+    eFrame.loadFile(
+                "Capulin UT DSP.asm", "ASM Source Files//Capulin UT DSP.asm");
 
-eFrame.loadFile("Documentation.txt", "ASM Source Files//Documentation.txt");
+    eFrame.loadFile("Documentation.txt", "ASM Source Files//Documentation.txt");
 
-//force layout of GUI
-mainFrame.pack();
+    //force layout of GUI
+    mainFrame.pack();
 
-//force garbage collection before beginning any time sensitive tasks
-System.gc();
+    //force garbage collection before beginning any time sensitive tasks
+    System.gc();
 
 }//end of MainWindow::init
 //-----------------------------------------------------------------------------
@@ -201,13 +201,13 @@ System.gc();
 private void loadSettings()
 {
 
-globals = new Globals();
+    globals = new Globals();
 
-project = new Project(globals);
+    project = new Project(globals);
 
-globals.sourceCodeFileList = project.sourceCodeFileList.fileList;
-globals.linkerFileList = project.linkerFileList.fileList;
-globals.docFileList = project.docFileList.fileList;
+    globals.sourceCodeFileList = project.sourceCodeFileList.fileList;
+    globals.linkerFileList = project.linkerFileList.fileList;
+    globals.docFileList = project.docFileList.fileList;
 
 }//end of MainWindow::loadSettings
 //-----------------------------------------------------------------------------
@@ -323,7 +323,7 @@ public void changedUpdate(DocumentEvent ev)
 public void windowClosing(WindowEvent e)
 {
 
-project.saveFile();
+    project.saveFile();
 
 }//end of MainWindow::windowClosing
 //-----------------------------------------------------------------------------
@@ -379,11 +379,11 @@ public class Main{
 private static void createAndShowGUI()
 {
 
-//instantiate an object to create and handle the main window JFrame
-MainWindow mainWindow = new MainWindow();
+    //instantiate an object to create and handle the main window JFrame
+    MainWindow mainWindow = new MainWindow();
 
-//set up the new object
-mainWindow.init();
+    //set up the new object
+    mainWindow.init();
 
 }//end of Main::createAndShowGUI
 //-----------------------------------------------------------------------------
@@ -395,13 +395,13 @@ mainWindow.init();
 public static void main(String[] args)
 {
 
-//Schedule a job for the event-dispatching thread:
-//creating and showing this application's GUI.
+    //Schedule a job for the event-dispatching thread:
+    //creating and showing this application's GUI.
 
-javax.swing.SwingUtilities.invokeLater(
-        new Runnable() {
-            @Override
-            public void run() { createAndShowGUI(); } });
+    javax.swing.SwingUtilities.invokeLater(
+            new Runnable() {
+                @Override
+                public void run() { createAndShowGUI(); } });
 
 }//end of Main::main
 //-----------------------------------------------------------------------------

@@ -31,13 +31,13 @@ import java.io.*;
 public class Project extends Object{
 
 
-Globals globals;
+    Globals globals;
 
-int numFiles = 0;
+    int numFiles = 0;
 
-FileList sourceCodeFileList;
-FileList linkerFileList;
-FileList docFileList;
+    FileList sourceCodeFileList;
+    FileList linkerFileList;
+    FileList docFileList;
 
 //-----------------------------------------------------------------------------
 // Project::Project (constructor)
@@ -46,13 +46,13 @@ FileList docFileList;
 Project(Globals pGlobals)
 {
 
-globals = pGlobals;
+    globals = pGlobals;
 
-sourceCodeFileList = new FileList();
-linkerFileList = new FileList();
-docFileList = new FileList();
+    sourceCodeFileList = new FileList();
+    linkerFileList = new FileList();
+    docFileList = new FileList();
 
-loadFile();
+    loadFile();
 
 }//end of Project::Project (constructor)
 //-----------------------------------------------------------------------------
@@ -66,20 +66,20 @@ loadFile();
 private void loadFile()
 {
 
-IniFile ini = null;
+    IniFile ini;
 
-try {
+    try {
 
-    //open the project file
-    ini = new IniFile(globals.getProjectFullPath(), "UTF-8");
+        //open the project file
+        ini = new IniFile(globals.getProjectFullPath(), "UTF-8");
 
-    sourceCodeFileList.loadFile(ini, "Source Code Files");
-    linkerFileList.loadFile(ini, "Linker Command Files");
-    docFileList.loadFile(ini, "Documentation and Note Files");
+        sourceCodeFileList.loadFile(ini, "Source Code Files");
+        linkerFileList.loadFile(ini, "Linker Command Files");
+        docFileList.loadFile(ini, "Documentation and Note Files");
 
     }
-catch(IOException e){
-    Globals.errorMsg("Error loading Project file");
+    catch(IOException e){
+        Globals.errorMsg("Error loading Project file");
     }
 
 }//end of Project::loadFile
@@ -94,23 +94,23 @@ catch(IOException e){
 public void saveFile()
 {
 
-IniFile ini = null;
+    IniFile ini;
 
-try {
+    try {
 
-    //open the project file
-    ini = new IniFile(globals.getProjectFullPath(), "UTF-8");
+        //open the project file
+        ini = new IniFile(globals.getProjectFullPath(), "UTF-8");
 
-    sourceCodeFileList.saveFile(ini, "Source Code Files");
-    linkerFileList.saveFile(ini, "Linker Command Files");
-    docFileList.saveFile(ini, "Documentation and Note Files");
+        sourceCodeFileList.saveFile(ini, "Source Code Files");
+        linkerFileList.saveFile(ini, "Linker Command Files");
+        docFileList.saveFile(ini, "Documentation and Note Files");
 
-    //force save of data to file
-    ini.save();
+        //force save of data to file
+        ini.save();
 
     }
-catch(IOException e){
-    Globals.errorMsg("Error saving Project file");
+    catch(IOException e){
+        Globals.errorMsg("Error saving Project file");
     }
 
 }//end of Project::saveFile

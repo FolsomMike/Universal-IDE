@@ -32,12 +32,12 @@ import java.util.*;
 public class FileList extends Object{
 
 
-Globals globals;
+    Globals globals;
 
-//public String getFileListFullPath(){return FileListFullPath;}
-//public void setFileListFullPath(String pS){FileListFullPath = pS;}
+    //public String getFileListFullPath(){return FileListFullPath;}
+    //public void setFileListFullPath(String pS){FileListFullPath = pS;}
 
-public ArrayList<File> fileList = new ArrayList<File>();
+    public ArrayList<File> fileList = new ArrayList<File>();
 
 
 //-----------------------------------------------------------------------------
@@ -59,19 +59,19 @@ FileList()
 public void loadFile(IniFile pIni, String pCategory) throws IOException
 {
 
-int numFiles = 0;
+    int numFiles;
 
-numFiles = pIni.readInt(pCategory, "Number of Files", 0);
+    numFiles = pIni.readInt(pCategory, "Number of Files", 0);
 
-String key, file;
+    String key, file;
 
-for (int i = 0; i < numFiles; i++){
+    for (int i = 0; i < numFiles; i++){
 
-    key = "File " + i;
+        key = "File " + i;
 
-    file = pIni.readString(pCategory, key, "");
+        file = pIni.readString(pCategory, key, "");
 
-    fileList.add(new File(file));
+        fileList.add(new File(file));
 
     }
 
@@ -87,24 +87,24 @@ for (int i = 0; i < numFiles; i++){
 public void saveFile(IniFile pIni, String pCategory) throws IOException
 {
 
-int numFiles = 0;
+    int numFiles = 0;
 
-String key;
-Iterator i;
-File file;
+    String key;
+    Iterator i;
+    File file;
 
-for (i = fileList.iterator(); i.hasNext();){
+    for (i = fileList.iterator(); i.hasNext();){
 
-    file = (File)i.next();
+        file = (File)i.next();
 
-    key = "File " + numFiles++;
+        key = "File " + numFiles++;
 
-    pIni.writeString(pCategory, key, file.getPath());
+        pIni.writeString(pCategory, key, file.getPath());
 
     }
 
-//save the number of files in the list
-pIni.writeInt(pCategory, "Number of Files", numFiles);
+    //save the number of files in the list
+    pIni.writeInt(pCategory, "Number of Files", numFiles);
 
 }//end of FileList::saveFile
 //-----------------------------------------------------------------------------

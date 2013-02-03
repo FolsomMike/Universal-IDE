@@ -38,18 +38,18 @@ import java.io.*;
 
 public class EditorRig extends JPanel{
 
-static final int MAX_CHARACTERS = 1000000;
-String newline = "\n";
+    static final int MAX_CHARACTERS = 1000000;
+    String newline = "\n";
 
-//undo manager -- handles undo/redo actions
-//each EditorRig, and thus each document, will have its own undo manager so
-//changes can be tracked separately for each
-public UndoManager undo = new UndoManager();
+    //undo manager -- handles undo/redo actions
+    //each EditorRig, and thus each document, will have its own undo manager so
+    //changes can be tracked separately for each
+    public UndoManager undo = new UndoManager();
 
-JTextPane textPane;
-AbstractDocument doc = null;
-JTextArea changeLog;
-HashMap<Object, Action> actions;
+    JTextPane textPane;
+    AbstractDocument doc = null;
+    JTextArea changeLog;
+    HashMap<Object, Action> actions;
 
 //-----------------------------------------------------------------------------
 // EditorRig::EditorRig (constructor)
@@ -58,7 +58,7 @@ HashMap<Object, Action> actions;
 public EditorRig()
 {
 
-super(new BorderLayout());
+    super(new BorderLayout());
 
 }//end of EditorRig::EditorRig (constructor)
 //-----------------------------------------------------------------------------
@@ -74,57 +74,58 @@ super(new BorderLayout());
 public void init(UndoableEditListener pUndoableEditListener)
 {
 
-//create the text pane and configure it
-textPane = new JTextPane();
-textPane.setCaretPosition(0);
-textPane.setMargin(new Insets(5,5,5,5));
-StyledDocument styledDoc = textPane.getStyledDocument();
+    //create the text pane and configure it
+    textPane = new JTextPane();
+    textPane.setCaretPosition(0);
+    textPane.setMargin(new Insets(5,5,5,5));
+    StyledDocument styledDoc = textPane.getStyledDocument();
 
-if (styledDoc instanceof AbstractDocument) {
-    doc = (AbstractDocument)styledDoc;
-    doc.setDocumentFilter(new DocumentSizeFilter(MAX_CHARACTERS));
+    if (styledDoc instanceof AbstractDocument) {
+        doc = (AbstractDocument)styledDoc;
+        doc.setDocumentFilter(new DocumentSizeFilter(MAX_CHARACTERS));
     }
-else {
-    System.err.println("Text pane's document isn't an AbstractDocument!");
-    System.exit(-1);
+    else {
+        System.err.println("Text pane's document isn't an AbstractDocument!");
+        System.exit(-1);
     }
 
-JScrollPane scrollPane = new JScrollPane(textPane);
-scrollPane.setPreferredSize(new Dimension(300, 350));
+    JScrollPane scrollPane = new JScrollPane(textPane);
+    scrollPane.setPreferredSize(new Dimension(300, 350));
 
-//reate the text area for the status log and configure it
-changeLog = new JTextArea(5, 2);
-changeLog.setEditable(false);
-JScrollPane scrollPaneForLog = new JScrollPane(changeLog);
-scrollPaneForLog.setPreferredSize(new Dimension(300, 50));
+    //reate the text area for the status log and configure it
+    changeLog = new JTextArea(5, 2);
+    changeLog.setEditable(false);
+    JScrollPane scrollPaneForLog = new JScrollPane(changeLog);
+    scrollPaneForLog.setPreferredSize(new Dimension(300, 50));
 
-//create a split pane for the change log and the text area
-JSplitPane splitPane = new JSplitPane(
-                                       JSplitPane.VERTICAL_SPLIT,
-                                       scrollPane, scrollPaneForLog);
-splitPane.setOneTouchExpandable(true);
-splitPane.setDividerLocation(550);
+    //create a split pane for the change log and the text area
+    JSplitPane splitPane = new JSplitPane(
+                                           JSplitPane.VERTICAL_SPLIT,
+                                           scrollPane, scrollPaneForLog);
+    splitPane.setOneTouchExpandable(true);
+    splitPane.setDividerLocation(550);
 
-//create the status area
-JPanel statusPane = new JPanel(new GridLayout(1, 1));
-CaretListenerLabel caretListenerLabel = new CaretListenerLabel("Caret Status");
-statusPane.add(caretListenerLabel);
+    //create the status area
+    JPanel statusPane = new JPanel(new GridLayout(1, 1));
+    CaretListenerLabel caretListenerLabel =
+                                    new CaretListenerLabel("Caret Status");
+    statusPane.add(caretListenerLabel);
 
-//add the components to the editor rig panel
-add(splitPane, BorderLayout.CENTER);
-add(statusPane, BorderLayout.PAGE_END);
+    //add the components to the editor rig panel
+    add(splitPane, BorderLayout.CENTER);
+    add(statusPane, BorderLayout.PAGE_END);
 
-//Start watching for undoable edits and caret changes.
-doc.addUndoableEditListener(pUndoableEditListener);
+    //Start watching for undoable edits and caret changes.
+    doc.addUndoableEditListener(pUndoableEditListener);
 
-textPane.addCaretListener(caretListenerLabel);
-doc.addDocumentListener(new MyDocumentListener());
+    textPane.addCaretListener(caretListenerLabel);
+    doc.addDocumentListener(new MyDocumentListener());
 
-// create a list of actions available for the text editor component
-actions = createActionTable(textPane);
+    // create a list of actions available for the text editor component
+    actions = createActionTable(textPane);
 
-//add key bindings -- connects keyboard shortcuts to actions
-addBindings();
+    //add key bindings -- connects keyboard shortcuts to actions
+    addBindings();
 
 }//end of EditorRig::init
 //-----------------------------------------------------------------------------
@@ -140,25 +141,25 @@ addBindings();
 private void addBindings()
 {
 
-//Add a couple of Emacs key bindings for navigation.
+    //Add a couple of Emacs key bindings for navigation.
 
-InputMap inputMap = textPane.getInputMap();
+    InputMap inputMap = textPane.getInputMap();
 
-//Ctrl-b to go backward one character
-KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK);
-inputMap.put(key, DefaultEditorKit.backwardAction);
+    //Ctrl-b to go backward one character
+    KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK);
+    inputMap.put(key, DefaultEditorKit.backwardAction);
 
-//Ctrl-f to go forward one character
-key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
-inputMap.put(key, DefaultEditorKit.forwardAction);
+    //Ctrl-f to go forward one character
+    key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
+    inputMap.put(key, DefaultEditorKit.forwardAction);
 
-//Ctrl-p to go up one line
-key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
-inputMap.put(key, DefaultEditorKit.upAction);
+    //Ctrl-p to go up one line
+    key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
+    inputMap.put(key, DefaultEditorKit.upAction);
 
-//Ctrl-n to go down one line
-key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
-inputMap.put(key, DefaultEditorKit.downAction);
+    //Ctrl-n to go down one line
+    key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
+    inputMap.put(key, DefaultEditorKit.downAction);
 
 }//end of EditorRig::addBindings
 //-----------------------------------------------------------------------------
@@ -173,26 +174,26 @@ inputMap.put(key, DefaultEditorKit.downAction);
 public JMenu createEditMenu(
                       AbstractAction pUndoAction, AbstractAction pRedoAction) {
 
-JMenu menu = new JMenu("Edit");
+    JMenu menu = new JMenu("Edit");
 
-//use the custom actions for the menu
-menu.add(pUndoAction);
-menu.add(pRedoAction);
+    //use the custom actions for the menu
+    menu.add(pUndoAction);
+    menu.add(pRedoAction);
 
-menu.addSeparator();
+    menu.addSeparator();
 
-//These actions come from the default editor kit.
-//Get the ones we want and stick them in the menu.
+    //These actions come from the default editor kit.
+    //Get the ones we want and stick them in the menu.
 
-menu.add(getActionByName(DefaultEditorKit.cutAction));
-menu.add(getActionByName(DefaultEditorKit.copyAction));
-menu.add(getActionByName(DefaultEditorKit.pasteAction));
+    menu.add(getActionByName(DefaultEditorKit.cutAction));
+    menu.add(getActionByName(DefaultEditorKit.copyAction));
+    menu.add(getActionByName(DefaultEditorKit.pasteAction));
 
-menu.addSeparator();
+    menu.addSeparator();
 
-menu.add(getActionByName(DefaultEditorKit.selectAllAction));
+    menu.add(getActionByName(DefaultEditorKit.selectAllAction));
 
-return menu;
+    return menu;
 
 }//end of EditorRig::createEditMenu
 //-----------------------------------------------------------------------------
@@ -206,41 +207,41 @@ return menu;
 
 public JMenu createStyleMenu() {
 
-JMenu menu = new JMenu("Style");
+    JMenu menu = new JMenu("Style");
 
-Action action;
+    Action action;
 
-action = new StyledEditorKit.BoldAction();
-action.putValue(Action.NAME, "Bold");
-menu.add(action);
+    action = new StyledEditorKit.BoldAction();
+    action.putValue(Action.NAME, "Bold");
+    menu.add(action);
 
-action = new StyledEditorKit.ItalicAction();
-action.putValue(Action.NAME, "Italic");
-menu.add(action);
+    action = new StyledEditorKit.ItalicAction();
+    action.putValue(Action.NAME, "Italic");
+    menu.add(action);
 
-action = new StyledEditorKit.UnderlineAction();
-action.putValue(Action.NAME, "Underline");
-menu.add(action);
+    action = new StyledEditorKit.UnderlineAction();
+    action.putValue(Action.NAME, "Underline");
+    menu.add(action);
 
-menu.addSeparator();
+    menu.addSeparator();
 
-menu.add(new StyledEditorKit.FontSizeAction("12", 12));
-menu.add(new StyledEditorKit.FontSizeAction("14", 14));
-menu.add(new StyledEditorKit.FontSizeAction("18", 18));
+    menu.add(new StyledEditorKit.FontSizeAction("12", 12));
+    menu.add(new StyledEditorKit.FontSizeAction("14", 14));
+    menu.add(new StyledEditorKit.FontSizeAction("18", 18));
 
-menu.addSeparator();
+    menu.addSeparator();
 
-menu.add(new StyledEditorKit.FontFamilyAction("Serif", "Serif"));
-menu.add(new StyledEditorKit.FontFamilyAction("SansSerif", "SansSerif"));
+    menu.add(new StyledEditorKit.FontFamilyAction("Serif", "Serif"));
+    menu.add(new StyledEditorKit.FontFamilyAction("SansSerif", "SansSerif"));
 
-menu.addSeparator();
+    menu.addSeparator();
 
-menu.add(new StyledEditorKit.ForegroundAction("Red", Color.red));
-menu.add(new StyledEditorKit.ForegroundAction("Green", Color.green));
-menu.add(new StyledEditorKit.ForegroundAction("Blue", Color.blue));
-menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
+    menu.add(new StyledEditorKit.ForegroundAction("Red", Color.red));
+    menu.add(new StyledEditorKit.ForegroundAction("Green", Color.green));
+    menu.add(new StyledEditorKit.ForegroundAction("Blue", Color.blue));
+    menu.add(new StyledEditorKit.ForegroundAction("Black", Color.black));
 
-return menu;
+    return menu;
 
 }//end of EditorRig::createStyleMenu
 //-----------------------------------------------------------------------------
@@ -254,27 +255,27 @@ return menu;
 
 public final void initSampleDocument() {
 
-String initString[] =
-    {
-     "Use the mouse to place the caret.",
-     "Use the edit menu to cut, copy, paste, and select text.",
-     "Also to undo and redo changes.",
-     "Use the style menu to change the style of the text.",
-     "Use the arrow keys on the keyboard or these emacs key bindings to move the caret:",
-     "Ctrl-f, Ctrl-b, Ctrl-n, Ctrl-p."
-    };
+    String initString[] =
+        {
+         "Use the mouse to place the caret.",
+         "Use the edit menu to cut, copy, paste, and select text.",
+         "Also to undo and redo changes.",
+         "Use the style menu to change the style of the text.",
+         "Use the arrow keys on the keyboard or these emacs key bindings to move the caret:",
+         "Ctrl-f, Ctrl-b, Ctrl-n, Ctrl-p."
+        };
 
-SimpleAttributeSet[] attrs = initSampleAttributes(initString.length);
+    SimpleAttributeSet[] attrs = initSampleAttributes(initString.length);
 
-try {
+    try {
 
-    for (int i = 0; i < initString.length; i ++) {
-        doc.insertString(doc.getLength(), initString[i] + newline, attrs[i]);
+        for (int i = 0; i < initString.length; i ++) {
+            doc.insertString(doc.getLength(), initString[i] +
+                                                            newline, attrs[i]);
         }
-
     }
-catch (BadLocationException ble) {
-    System.err.println("Couldn't insert initial text.");
+    catch (BadLocationException ble) {
+        System.err.println("Couldn't insert initial text.");
     }
 
 }//end of EditorRig::initSampleDocument
@@ -292,36 +293,36 @@ catch (BadLocationException ble) {
 
 protected SimpleAttributeSet[] initSampleAttributes(int length) {
 
-// create an array of attribute sets
+    //create an array of attribute sets
 
-SimpleAttributeSet[] attrs = new SimpleAttributeSet[length];
+    SimpleAttributeSet[] attrs = new SimpleAttributeSet[length];
 
-// create set for array index 0 and set some attributes
-attrs[0] = new SimpleAttributeSet();
-StyleConstants.setFontFamily(attrs[0], "SansSerif");
-StyleConstants.setFontSize(attrs[0], 16);
+    // create set for array index 0 and set some attributes
+    attrs[0] = new SimpleAttributeSet();
+    StyleConstants.setFontFamily(attrs[0], "SansSerif");
+    StyleConstants.setFontSize(attrs[0], 16);
 
-// create another set, using first set as starting point, change attribute(s)
-attrs[1] = new SimpleAttributeSet(attrs[0]);
-StyleConstants.setBold(attrs[1], true);
+    //create another set, using first set as starting point, change attribute(s)
+    attrs[1] = new SimpleAttributeSet(attrs[0]);
+    StyleConstants.setBold(attrs[1], true);
 
-// create another set, using first set as starting point, change attribute(s)
-attrs[2] = new SimpleAttributeSet(attrs[0]);
-StyleConstants.setItalic(attrs[2], true);
+    //create another set, using first set as starting point, change attribute(s)
+    attrs[2] = new SimpleAttributeSet(attrs[0]);
+    StyleConstants.setItalic(attrs[2], true);
 
-// create another set, using first set as starting point, change attribute(s)
-attrs[3] = new SimpleAttributeSet(attrs[0]);
-StyleConstants.setFontSize(attrs[3], 20);
+    //create another set, using first set as starting point, change attribute(s)
+    attrs[3] = new SimpleAttributeSet(attrs[0]);
+    StyleConstants.setFontSize(attrs[3], 20);
 
-// create another set, using first set as starting point, change attribute(s)
-attrs[4] = new SimpleAttributeSet(attrs[0]);
-StyleConstants.setFontSize(attrs[4], 12);
+    //create another set, using first set as starting point, change attribute(s)
+    attrs[4] = new SimpleAttributeSet(attrs[0]);
+    StyleConstants.setFontSize(attrs[4], 12);
 
-// create another set, using first set as starting point, change attribute(s)
-attrs[5] = new SimpleAttributeSet(attrs[0]);
-StyleConstants.setForeground(attrs[5], Color.red);
+    //create another set, using first set as starting point, change attribute(s)
+    attrs[5] = new SimpleAttributeSet(attrs[0]);
+    StyleConstants.setForeground(attrs[5], Color.red);
 
-return attrs;
+    return attrs;
 
 }//end of EditorRig::initSampleAttributes
 //-----------------------------------------------------------------------------
@@ -340,19 +341,19 @@ return attrs;
 private HashMap<Object, Action> createActionTable(JTextComponent pTextComponent)
 {
 
-HashMap<Object, Action> actionsList = new HashMap<Object, Action>();
+    HashMap<Object, Action> actionsList = new HashMap<Object, Action>();
 
-//get a list of available actions from the text component
-Action[] actionsArray = pTextComponent.getActions();
+    //get a list of available actions from the text component
+    Action[] actionsArray = pTextComponent.getActions();
 
-//insert the action/acton name pairs into the hash map
+    //insert the action/acton name pairs into the hash map
 
-for (int i = 0; i < actionsArray.length; i++) {
-    Action a = actionsArray[i];
-    actionsList.put(a.getValue(Action.NAME), a);
-    }
+    for (int i = 0; i < actionsArray.length; i++) {
+        Action a = actionsArray[i];
+        actionsList.put(a.getValue(Action.NAME), a);
+        }
 
-return actionsList;
+    return actionsList;
 
 }//end of EditorRig::createActionTable
 //-----------------------------------------------------------------------------
@@ -369,7 +370,7 @@ return actionsList;
 private Action getActionByName(String pName)
 {
 
-return actions.get(pName);
+    return actions.get(pName);
 
 }//end of EditorRig::getActionByName
 //-----------------------------------------------------------------------------
@@ -383,34 +384,35 @@ return actions.get(pName);
 public void loadFile(String pFilepath)
 {
 
-try {
-    FileInputStream fr = new FileInputStream(pFilepath);
-    InputStreamReader isr = new InputStreamReader(fr, "UTF-8");
-    BufferedReader reader = new BufferedReader(isr);
-    StringBuilder buffer = new StringBuilder();
+    try {
 
-    int x = 0;
+        FileInputStream fr = new FileInputStream(pFilepath);
+        InputStreamReader isr = new InputStreamReader(fr, "UTF-8");
+        BufferedReader reader = new BufferedReader(isr);
+        StringBuilder buffer = new StringBuilder();
 
-    String line = null;
-    while ((line = reader.readLine()) != null) {
-        buffer.append(line).append("\n");
-	}
+        int x = 0;
 
-    reader.close();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            buffer.append(line).append("\n");
+        }
 
-    textPane.setText(buffer.toString());
+        reader.close();
 
-    }
-catch (IOException e) {
+        textPane.setText(buffer.toString());
 
     }
+    catch (IOException e) {
 
-//Font font = new Font("Serif", Font.PLAIN, 14);
-Font font = new Font("Monospaced", Font.PLAIN, 14);
+    }
 
-setJTextPaneFont(textPane, font, Color.BLACK);
+    //Font font = new Font("Serif", Font.PLAIN, 14);
+    Font font = new Font("Monospaced", Font.PLAIN, 14);
 
-textPane.setCaretPosition(0);
+    setJTextPaneFont(textPane, font, Color.BLACK);
+
+    textPane.setCaretPosition(0);
 
 }//end of EditorRig::loadFile
 //-----------------------------------------------------------------------------
@@ -425,67 +427,67 @@ textPane.setCaretPosition(0);
 
 public void setJTextPaneFont(JTextPane jtp, Font font, Color c) {
 
-//create a tabSet to set the tab spacing
+    //create a tabSet to set the tab spacing
 
-int x = 32, d = 32;
+    int x = 32, d = 32;
 
-TabSet tabSet = new TabSet(new TabStop[] {
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
-    new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d)
-    });
+    TabSet tabSet = new TabSet(new TabStop[] {
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d),
+        new TabStop(x), new TabStop(x+=d), new TabStop(x+=d), new TabStop(x+=d)
+        });
 
-// before setting new character attributes, the existing ones are retrieved
-// JTextPane.getCharacterAttributes returns an AttributeSet object which must
-// be converted to an MutableAttributeSet object for use by the
-// StyleConstants functions
-// an example from the web used
-//      MutableAttributeSet attrs = jtp.getInputAttributes();
-// which returned a Mutable set which avoided the conversion to mutable -- but
-// it is not explained (adequately) in the help what getInputAttributes returns
-// so the below seemed to be the more precise method
+    // before setting new character attributes, the existing ones are retrieved
+    // JTextPane.getCharacterAttributes returns an AttributeSet object which
+    // must be converted to an MutableAttributeSet object for use by the
+    // StyleConstants functions
+    // an example from the web used
+    //      MutableAttributeSet attrs = jtp.getInputAttributes();
+    // which returned a Mutable set which avoided the conversion to mutable --
+    // but it is not explained (adequately) in the help what getInputAttributes
+    // returns so the below seemed to be the more precise method
 
-AttributeSet iattrs = jtp.getCharacterAttributes();
-MutableAttributeSet attrs = new SimpleAttributeSet();
-attrs.addAttributes(iattrs);
+    AttributeSet iattrs = jtp.getCharacterAttributes();
+    MutableAttributeSet attrs = new SimpleAttributeSet();
+    attrs.addAttributes(iattrs);
 
-// Set the font family, size, and style, based on properties of
-// the Font object. Note that JTextPane supports a number of
-// character attributes beyond those supported by the Font class.
-// For example, underline, strike-through, super- and sub-script.
-StyleConstants.setFontFamily(attrs, font.getFamily());
-StyleConstants.setFontSize(attrs, font.getSize());
-StyleConstants.setItalic(attrs, (font.getStyle() & Font.ITALIC) != 0);
-StyleConstants.setBold(attrs, (font.getStyle() & Font.BOLD) != 0);
+    // Set the font family, size, and style, based on properties of
+    // the Font object. Note that JTextPane supports a number of
+    // character attributes beyond those supported by the Font class.
+    // For example, underline, strike-through, super- and sub-script.
+    StyleConstants.setFontFamily(attrs, font.getFamily());
+    StyleConstants.setFontSize(attrs, font.getSize());
+    StyleConstants.setItalic(attrs, (font.getStyle() & Font.ITALIC) != 0);
+    StyleConstants.setBold(attrs, (font.getStyle() & Font.BOLD) != 0);
 
-// Set the font color
-StyleConstants.setForeground(attrs, c);
+    // Set the font color
+    StyleConstants.setForeground(attrs, c);
 
-// Retrieve the pane's document object
-StyledDocument sDoc = jtp.getStyledDocument();
+    // Retrieve the pane's document object
+    StyledDocument sDoc = jtp.getStyledDocument();
 
-// Replace the style for the entire document. We exceed the length
-// of the document by 1 so that text entered at the end of the
-// document uses the attributes.
+    // Replace the style for the entire document. We exceed the length
+    // of the document by 1 so that text entered at the end of the
+    // document uses the attributes.
 
-sDoc.setCharacterAttributes(0, doc.getLength() + 1, attrs, false);
+    sDoc.setCharacterAttributes(0, doc.getLength() + 1, attrs, false);
 
-// set paragraph attributes to adjust the tab spacing
-// see notes above for getCharacterAttributes for more info on converting
-// from non-mutable to mutable attribute set
+    // set paragraph attributes to adjust the tab spacing
+    // see notes above for getCharacterAttributes for more info on converting
+    // from non-mutable to mutable attribute set
 
-iattrs = jtp.getParagraphAttributes();
-attrs = new SimpleAttributeSet();
-attrs.addAttributes(iattrs);
+    iattrs = jtp.getParagraphAttributes();
+    attrs = new SimpleAttributeSet();
+    attrs.addAttributes(iattrs);
 
-StyleConstants.setTabSet(attrs, tabSet);
+    StyleConstants.setTabSet(attrs, tabSet);
 
-sDoc.setParagraphAttributes(0, doc.getLength() + 1, attrs, false);
+    sDoc.setParagraphAttributes(0, doc.getLength() + 1, attrs, false);
 
 }//end of EditorRig::setJTextPaneFont
 //-----------------------------------------------------------------------------
@@ -519,7 +521,7 @@ protected class CaretListenerLabel extends JLabel implements CaretListener {
 
 public CaretListenerLabel(String label) {
 
-super(label);
+    super(label);
 
 }//end of CaretListenerLabel::CaretListenerLabel (constructor)
 //-----------------------------------------------------------------------------
@@ -532,7 +534,7 @@ super(label);
 
 public void caretUpdate(CaretEvent e) {
 
-displaySelectionInfo(e.getDot(), e.getMark());
+    displaySelectionInfo(e.getDot(), e.getMark());
 
 }//end of CaretListenerLabel::caretUpdate
 //-----------------------------------------------------------------------------
@@ -548,31 +550,31 @@ displaySelectionInfo(e.getDot(), e.getMark());
 protected void displaySelectionInfo(final int dot, final int mark)
 {
 
-SwingUtilities.invokeLater(
-    new Runnable() {
+    SwingUtilities.invokeLater(
+        new Runnable() {
 
-        public void run() {
-            if (dot == mark) {  // no selection
-                try {
-                    Rectangle caretCoords = textPane.modelToView(dot);
-                    //Convert it to view coordinates.
-                    setText("caret: text position: " + dot
+            public void run() {
+                if (dot == mark) {  // no selection
+                    try {
+                        Rectangle caretCoords = textPane.modelToView(dot);
+                        //Convert it to view coordinates.
+                        setText("caret: text position: " + dot
                                  + ", view location = [" + caretCoords.x + ", "
                                                + caretCoords.y + "]" + newline);
+                        }
+                    catch (BadLocationException ble) {
+                        setText("caret: text position: " + dot + newline);
+                        }
+                    }// if (dot == mark)
+                else if (dot < mark) {
+                    setText("selection from: " + dot + " to " + mark + newline);
                     }
-                catch (BadLocationException ble) {
-                    setText("caret: text position: " + dot + newline);
+                else {
+                    setText("selection from: " + mark + " to " + dot + newline);
                     }
-                }// if (dot == mark)
-            else if (dot < mark) {
-                setText("selection from: " + dot + " to " + mark + newline);
-                }
-            else {
-                setText("selection from: " + mark + " to " + dot + newline);
-                }
-            } //public void run()
-        }// new Runnable()
-    ); //SwingUtilities.invokeLater
+                } //public void run()
+            }// new Runnable()
+        ); //SwingUtilities.invokeLater
 
 }//end of CaretListenerLabel::displaySelectionInfo
 //-----------------------------------------------------------------------------
@@ -601,17 +603,17 @@ protected class MyDocumentListener implements DocumentListener {
 
 public void insertUpdate(DocumentEvent e)
 {
-displayEditInfo(e);
+    displayEditInfo(e);
 }
 
 public void removeUpdate(DocumentEvent e)
 {
-displayEditInfo(e);
+    displayEditInfo(e);
 }
 
 public void changedUpdate(DocumentEvent e)
 {
-displayEditInfo(e);
+    displayEditInfo(e);
 }
 
 //end of MyDocumentListener::(various listener functions)
@@ -625,19 +627,19 @@ displayEditInfo(e);
 
 private void displayEditInfo(DocumentEvent e) {
 
-//display a log of all changes made in a separate text area
+    //display a log of all changes made in a separate text area
 
-/*
+    /*
 
-Document document = e.getDocument();
-int changeLength = e.getLength();
-changeLog.append(e.getType().toString() + ": " +
-                changeLength + " character" +
-                ((changeLength == 1) ? ". " : "s. ") +
-                " Text length = " + document.getLength() +
-                "." + newline);
+    Document document = e.getDocument();
+    int changeLength = e.getLength();
+    changeLog.append(e.getType().toString() + ": " +
+                    changeLength + " character" +
+                    ((changeLength == 1) ? ". " : "s. ") +
+                    " Text length = " + document.getLength() +
+                    "." + newline);
 
- */
+     */
 
 }//end of MyDocumentListener::displayEditInfo
 //-----------------------------------------------------------------------------
@@ -645,8 +647,6 @@ changeLog.append(e.getType().toString() + ": " +
 }//end of class MyDocumentListener
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
-
 
 }//end of class EditorRig
 //-----------------------------------------------------------------------------

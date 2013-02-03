@@ -36,20 +36,21 @@ import java.awt.event.KeyEvent;
 
 public class EditorTabPane extends JTabbedPane{
 
-Globals globals;
-ChangeListener lChangeListener;
+    Globals globals;
+    ChangeListener lChangeListener;
 
-private final int tabNumber = 5;
-JTabbedPane pane;
-private JMenuItem tabComponentsItem;
-private JMenuItem scrollLayoutItem;
+    private final int tabNumber = 5;
+    JTabbedPane pane;
+    private JMenuItem tabComponentsItem;
+    private JMenuItem scrollLayoutItem;
 
 
-//public String getEditorTabPaneFullPath(){return EditorTabPaneFullPath;}
-//public void setEditorTabPaneFullPath(String pS){EditorTabPaneFullPath = pS;}
+    //public String getEditorTabPaneFullPath(){return EditorTabPaneFullPath;}
+    //public void setEditorTabPaneFullPath(String pS){
+    //    EditorTabPaneFullPath = pS;
+    //}
 
-public ArrayList<File> EditorTabPane = new ArrayList<File>();
-
+    public ArrayList<File> EditorTabPane = new ArrayList<File>();
 
 //-----------------------------------------------------------------------------
 // EditorTabPane::EditorTabPane (constructor)
@@ -58,7 +59,7 @@ public ArrayList<File> EditorTabPane = new ArrayList<File>();
 EditorTabPane(ChangeListener pChangeListener)
 {
 
-lChangeListener = pChangeListener;
+    lChangeListener = pChangeListener;
 
 }//end of EditorTabPane::EditorTabPane (constructor)
 //-----------------------------------------------------------------------------
@@ -72,16 +73,16 @@ lChangeListener = pChangeListener;
 public void init()
 {
 
-pane = this;
+    pane = this;
 
-setName("Editor Tab Panel");
-addChangeListener(lChangeListener);
+    setName("Editor Tab Panel");
+    addChangeListener(lChangeListener);
 
-initMenu();
+    initMenu();
 
-pane.removeAll();
+    pane.removeAll();
 
-pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+    pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
 }//end of EditorTabPane::init
 //-----------------------------------------------------------------------------
@@ -96,19 +97,19 @@ pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
 public void debugTest() {
 
-pane.removeAll();
+    pane.removeAll();
 
-for (int i = 0; i < tabNumber; i++) {
-    String title = "Tab " + i;
-    //adds a pane with a label on it
-    pane.add(title, new JLabel(title));
-    //installs a component to draw the tab's title and icons
-    initTabComponent(i);
-    }
+    for (int i = 0; i < tabNumber; i++) {
+        String title = "Tab " + i;
+        //adds a pane with a label on it
+        pane.add(title, new JLabel(title));
+        //installs a component to draw the tab's title and icons
+        initTabComponent(i);
+        }
 
-tabComponentsItem.setSelected(true);
-pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-scrollLayoutItem.setSelected(false);
+    tabComponentsItem.setSelected(true);
+    pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+    scrollLayoutItem.setSelected(false);
 
 }//end of EditorTabPane::debugTest
 //-----------------------------------------------------------------------------
@@ -122,8 +123,8 @@ scrollLayoutItem.setSelected(false);
 
 public void addTab(String pFileName, String pFullPath, JPanel pPanel) {
 
-addTab(pFileName, null, pPanel, pFullPath);
-initTabComponent(pane.getTabCount()-1);
+    addTab(pFileName, null, pPanel, pFullPath);
+    initTabComponent(pane.getTabCount()-1);
 
 }//end of EditorTabPane::addTab
 //-----------------------------------------------------------------------------
@@ -136,7 +137,7 @@ initTabComponent(pane.getTabCount()-1);
 
 private void initTabComponent(int i) {
 
-pane.setTabComponentAt(i, new ButtonTab(pane));
+    pane.setTabComponentAt(i, new ButtonTab(pane));
 
 }//end of EditorTabPane::initTabComponent
 //-----------------------------------------------------------------------------
@@ -149,65 +150,70 @@ pane.setTabComponentAt(i, new ButtonTab(pane));
 
 private void initMenu() {
 
-JMenuBar menuBar = new JMenuBar();
+    JMenuBar menuBar = new JMenuBar();
 
-//create Options menu
+    //create Options menu
 
-tabComponentsItem = new JCheckBoxMenuItem("Use TabComponents", true);
-tabComponentsItem.setAccelerator(KeyStroke.getKeyStroke(
-                                        KeyEvent.VK_T, InputEvent.ALT_MASK));
+    tabComponentsItem = new JCheckBoxMenuItem("Use TabComponents", true);
+    tabComponentsItem.setAccelerator(KeyStroke.getKeyStroke(
+                                          KeyEvent.VK_T, InputEvent.ALT_MASK));
 
-tabComponentsItem.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-        for (int i = 0; i < pane.getTabCount(); i++) {
-            if (tabComponentsItem.isSelected()) {
-                //installs a component to draw the tab's title and icons
-                initTabComponent(i);
+    tabComponentsItem.addActionListener(
+
+        new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < pane.getTabCount(); i++) {
+                    if (tabComponentsItem.isSelected()) {
+                        //installs a component to draw the tab's title and icons
+                        initTabComponent(i);
+                    }
+                    else {
+                        //sets JTabbedPane class to draw the tab title
+                        pane.setTabComponentAt(i, null);
+                    }
                 }
-            else {
-                //sets JTabbedPane class to draw the tab title
-                pane.setTabComponentAt(i, null);
+            }
+        }
+    );
+
+    scrollLayoutItem = new JCheckBoxMenuItem("Set ScrollLayout");
+    scrollLayoutItem.setAccelerator(
+                KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_MASK));
+
+    scrollLayoutItem.addActionListener(
+        new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (pane.getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT) {
+                    pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+                }
+                else {
+                    pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
                 }
             }
         }
-    }
-);
+    );
 
-scrollLayoutItem = new JCheckBoxMenuItem("Set ScrollLayout");
-scrollLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_MASK));
+    JMenuItem resetItem = new JMenuItem("Reset JTabbedPane");
+    resetItem.setAccelerator(KeyStroke.getKeyStroke(
+                                         KeyEvent.VK_R, InputEvent.ALT_MASK));
 
-scrollLayoutItem.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-        if (pane.getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT) {
-            pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-            }
-        else {
-            pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+    resetItem.addActionListener(
+        new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                debugTest();
             }
         }
-    }
-);
+    );
 
-JMenuItem resetItem = new JMenuItem("Reset JTabbedPane");
-resetItem.setAccelerator(KeyStroke.getKeyStroke(
-                                        KeyEvent.VK_R, InputEvent.ALT_MASK));
+    JMenu optionsMenu = new JMenu("Options");
+    optionsMenu.add(tabComponentsItem);
+    optionsMenu.add(scrollLayoutItem);
+    optionsMenu.add(resetItem);
+    menuBar.add(optionsMenu);
 
-resetItem.addActionListener(new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-        debugTest();
-        }
-    }
-);
-
-JMenu optionsMenu = new JMenu("Options");
-optionsMenu.add(tabComponentsItem);
-optionsMenu.add(scrollLayoutItem);
-optionsMenu.add(resetItem);
-menuBar.add(optionsMenu);
-
-//debug mks - this object was originally a JPanel -- now is a JTabbedPane
-// can't set a menu here anymore -- needs to be moved to parent component
-//setJMenuBar(menuBar);
+    //debug mks - this object was originally a JPanel -- now is a JTabbedPane
+    // can't set a menu here anymore -- needs to be moved to parent component
+    //setJMenuBar(menuBar);
 
 }//end of EditorTabPane::initMenu
 //-----------------------------------------------------------------------------

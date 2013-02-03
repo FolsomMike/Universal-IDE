@@ -34,25 +34,25 @@ import java.awt.*;
 public class Globals extends Object{
 
 
-public ArrayList<File> sourceCodeFileList;
-public ArrayList<File> linkerFileList;
-public ArrayList<File> docFileList;
+    public ArrayList<File> sourceCodeFileList;
+    public ArrayList<File> linkerFileList;
+    public ArrayList<File> docFileList;
 
-//path to the project folder and the project file name
-private String projectFullPath = "";
-//just the path to the project folder
-private String projectPath = "";
-//just the project name (and thus the project file)
-private String projectName = "";
+    //path to the project folder and the project file name
+    private String projectFullPath = "";
+    //just the path to the project folder
+    private String projectPath = "";
+    //just the project name (and thus the project file)
+    private String projectName = "";
 
-public String getProjectFullPath(){return projectFullPath;}
-public void setProjectFullPath(String pS){projectFullPath = pS;}
+    public String getProjectFullPath(){return projectFullPath;}
+    public void setProjectFullPath(String pS){projectFullPath = pS;}
 
-public String getProjectPath(){return projectPath;}
-public void setProjectPath(String pS){projectPath = pS;}
+    public String getProjectPath(){return projectPath;}
+    public void setProjectPath(String pS){projectPath = pS;}
 
-public String getProjectName(){return projectName;}
-public void setProjectName(String pS){projectName = pS;}
+    public String getProjectName(){return projectName;}
+    public void setProjectName(String pS){projectName = pS;}
 
 //-----------------------------------------------------------------------------
 // Globals::Globals (constructor)
@@ -61,7 +61,7 @@ public void setProjectName(String pS){projectName = pS;}
 Globals()
 {
 
-loadFile();
+    loadFile();
 
 }//end of Globals::Globals (constructor)
 //-----------------------------------------------------------------------------
@@ -75,24 +75,25 @@ loadFile();
 private void loadFile()
 {
 
-IniFile ini = null;
+    IniFile ini = null;
 
 
-try {
+    try {
 
-    ini = new IniFile("Settings/Globals.ini", "UTF-8");
+        ini = new IniFile("Settings/Globals.ini", "UTF-8");
 
-    setProjectFullPath(ini.readString("General", "Current Project Path", ""));
+        setProjectFullPath(
+                        ini.readString("General", "Current Project Path", ""));
 
-    File project = new File(getProjectFullPath());
+        File project = new File(getProjectFullPath());
 
-    projectPath = project.getParent();
+        projectPath = project.getParent();
 
-    projectName = project.getName();
+        projectName = project.getName();
 
     }
-catch(IOException e){
-    Globals.errorMsg("Error loading Globals file");
+    catch(IOException e){
+        Globals.errorMsg("Error loading Globals file");
     }
 
 }//end of Globals::loadFile
@@ -107,17 +108,18 @@ catch(IOException e){
 public void saveFile()
 {
 
-IniFile ini = null;
+    IniFile ini = null;
 
-try {
+    try {
 
-    ini = new IniFile("Settings/Globals.ini");
+        ini = new IniFile("Settings/Globals.ini");
 
-    ini.writeString("General", "Current Project Path", getProjectFullPath());
+        ini.writeString(
+                      "General", "Current Project Path", getProjectFullPath());
 
     }
-catch(IOException e){
-    Globals.errorMsg("Error saving Globals file");
+    catch(IOException e){
+        Globals.errorMsg("Error saving Globals file");
     }
 
 
@@ -133,7 +135,7 @@ catch(IOException e){
 static void errorMsg(String pMessage)
 {
 
-JOptionPane.showMessageDialog(null, pMessage,
+    JOptionPane.showMessageDialog(null, pMessage,
                                             "Error", JOptionPane.ERROR_MESSAGE);
 
 }//end of Globals::errorMsg
@@ -148,13 +150,12 @@ JOptionPane.showMessageDialog(null, pMessage,
 static void setSizes(Component pComponent, int pWidth, int pHeight)
 {
 
-pComponent.setMinimumSize(new Dimension(pWidth, pHeight));
-pComponent.setPreferredSize(new Dimension(pWidth, pHeight));
-pComponent.setMaximumSize(new Dimension(pWidth, pHeight));
+    pComponent.setMinimumSize(new Dimension(pWidth, pHeight));
+    pComponent.setPreferredSize(new Dimension(pWidth, pHeight));
+    pComponent.setMaximumSize(new Dimension(pWidth, pHeight));
 
 }//end of Globals::setSizes
 //-----------------------------------------------------------------------------
-
 
 }//end of class Globals
 //-----------------------------------------------------------------------------

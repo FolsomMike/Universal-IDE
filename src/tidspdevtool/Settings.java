@@ -112,7 +112,7 @@ public void saveFile()
 
     try {
 
-        ini = new IniFile("Settings/Settings.ini");
+        ini = new IniFile("Settings/Settings.ini", "UTF-8");
 
         ini.writeString(
                       "General", "Current Project Path", getProjectFullPath());

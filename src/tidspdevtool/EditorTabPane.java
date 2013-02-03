@@ -36,7 +36,7 @@ import java.awt.event.KeyEvent;
 
 public class EditorTabPane extends JTabbedPane{
 
-    Globals globals;
+    Settings settings;
     ChangeListener lChangeListener;
 
     private final int tabNumber = 5;

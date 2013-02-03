@@ -32,7 +32,7 @@ import java.util.*;
 public class FileList extends Object{
 
 
-    Globals globals;
+    Settings settings;
 
     //public String getFileListFullPath(){return FileListFullPath;}
     //public void setFileListFullPath(String pS){FileListFullPath = pS;}

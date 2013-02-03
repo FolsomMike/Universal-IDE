@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Globals.java File
+* Title: TI DSP Dev Tool - Settings.java File
 * Author: Mike Schoonover
 * Date: 06/25/11
 *
@@ -27,11 +27,11 @@ import java.awt.*;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class Globals
+// class Settings
 //
 //
 
-public class Globals extends Object{
+public class Settings extends Object{
 
 
     public ArrayList<File> sourceCodeFileList;
@@ -55,19 +55,19 @@ public class Globals extends Object{
     public void setProjectName(String pS){projectName = pS;}
 
 //-----------------------------------------------------------------------------
-// Globals::Globals (constructor)
+// Settings::Settings (constructor)
 //
 
-Globals()
+Settings()
 {
 
     loadFile();
 
-}//end of Globals::Globals (constructor)
+}//end of Settings::Settings (constructor)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Globals::loadFile
+// Settings::loadFile
 //
 // Loads values from file.
 //
@@ -80,7 +80,7 @@ private void loadFile()
 
     try {
 
-        ini = new IniFile("Settings/Globals.ini", "UTF-8");
+        ini = new IniFile("Settings/Settings.ini", "UTF-8");
 
         setProjectFullPath(
                         ini.readString("General", "Current Project Path", ""));
@@ -93,14 +93,14 @@ private void loadFile()
 
     }
     catch(IOException e){
-        Globals.errorMsg("Error loading Globals file");
+        Settings.errorMsg("Error loading Settings file");
     }
 
-}//end of Globals::loadFile
+}//end of Settings::loadFile
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Globals::saveFile
+// Settings::saveFile
 //
 // Saves values to a file.
 //
@@ -112,22 +112,22 @@ public void saveFile()
 
     try {
 
-        ini = new IniFile("Settings/Globals.ini");
+        ini = new IniFile("Settings/Settings.ini");
 
         ini.writeString(
                       "General", "Current Project Path", getProjectFullPath());
 
     }
     catch(IOException e){
-        Globals.errorMsg("Error saving Globals file");
+        Settings.errorMsg("Error saving Globals file");
     }
 
 
-}//end of Globals::saveFile
+}//end of Settings::saveFile
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Globals::errorMsg
+// Settings::errorMsg
 //
 // Displays an error dialog with message pMessage.
 //
@@ -138,11 +138,11 @@ static void errorMsg(String pMessage)
     JOptionPane.showMessageDialog(null, pMessage,
                                             "Error", JOptionPane.ERROR_MESSAGE);
 
-}//end of Globals::errorMsg
+}//end of Settings::errorMsg
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Globals::setSizes
+// Settings::setSizes
 //
 // Sets the min, max, and preferred sizes of pComponent to pWidth and pHeight.
 //
@@ -154,9 +154,9 @@ static void setSizes(Component pComponent, int pWidth, int pHeight)
     pComponent.setPreferredSize(new Dimension(pWidth, pHeight));
     pComponent.setMaximumSize(new Dimension(pWidth, pHeight));
 
-}//end of Globals::setSizes
+}//end of Settings::setSizes
 //-----------------------------------------------------------------------------
 
-}//end of class Globals
+}//end of class Settings
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

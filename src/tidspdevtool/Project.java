@@ -31,7 +31,7 @@ import java.io.*;
 public class Project extends Object{
 
 
-    Globals globals;
+    Settings settings;
 
     int numFiles = 0;
 
@@ -43,10 +43,10 @@ public class Project extends Object{
 // Project::Project (constructor)
 //
 
-Project(Globals pGlobals)
+Project(Settings pSettings)
 {
 
-    globals = pGlobals;
+    settings = pSettings;
 
     sourceCodeFileList = new FileList();
     linkerFileList = new FileList();
@@ -71,7 +71,7 @@ private void loadFile()
     try {
 
         //open the project file
-        ini = new IniFile(globals.getProjectFullPath(), "UTF-8");
+        ini = new IniFile(settings.getProjectFullPath(), "UTF-8");
 
         sourceCodeFileList.loadFile(ini, "Source Code Files");
         linkerFileList.loadFile(ini, "Linker Command Files");
@@ -79,7 +79,7 @@ private void loadFile()
 
     }
     catch(IOException e){
-        Globals.errorMsg("Error loading Project file");
+        Settings.errorMsg("Error loading Project file");
     }
 
 }//end of Project::loadFile
@@ -99,7 +99,7 @@ public void saveFile()
     try {
 
         //open the project file
-        ini = new IniFile(globals.getProjectFullPath(), "UTF-8");
+        ini = new IniFile(settings.getProjectFullPath(), "UTF-8");
 
         sourceCodeFileList.saveFile(ini, "Source Code Files");
         linkerFileList.saveFile(ini, "Linker Command Files");
@@ -110,7 +110,7 @@ public void saveFile()
 
     }
     catch(IOException e){
-        Globals.errorMsg("Error saving Project file");
+        Settings.errorMsg("Error saving Project file");
     }
 
 }//end of Project::saveFile

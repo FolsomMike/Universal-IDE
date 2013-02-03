@@ -47,7 +47,7 @@ class ProjectFrame extends JInternalFrame implements
     DefaultMutableTreeNode rootNode;
     DefaultTreeModel treeModel;
 
-    Globals globals;
+    Settings settings;
 
     private int newNodeSuffix = 1;
     private JEditorPane htmlPane;
@@ -71,11 +71,11 @@ class ProjectFrame extends JInternalFrame implements
 //
 
 public ProjectFrame(String pTitle, boolean pResizable, boolean pCloseable,
-                boolean pMaximizable, boolean pIconifiable, Globals pGlobals) {
+              boolean pMaximizable, boolean pIconifiable, Settings pSettings) {
 
     super(pTitle, pResizable, pCloseable, pMaximizable, pIconifiable);
 
-    globals = pGlobals;
+    settings = pSettings;
 
 }//end of ProjectFrame::ProjectFrame (constructor)
 //-----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ public void init(){
     mainPanel.add(treeStuffPanel);
 
     //create the root node and all children
-    rootNode = new DefaultMutableTreeNode(globals.getProjectName());
+    rootNode = new DefaultMutableTreeNode(settings.getProjectName());
     createNodes(rootNode);
 
     // Force the tree model to the DefaultTreeModel so useful methods are sure
@@ -350,7 +350,7 @@ private void createNodes(DefaultMutableTreeNode top)
 
     //create a branch node (branch specified by the true parameter)
     category = new DefaultMutableTreeNode(
-            new FileCategory("Source Code", globals.sourceCodeFileList), true);
+            new FileCategory("Source Code", settings.sourceCodeFileList), true);
     top.add(category);
 
     //create a leaf node for each file in the list
@@ -359,7 +359,7 @@ private void createNodes(DefaultMutableTreeNode top)
     Iterator i;
     File file;
 
-    for (i = globals.sourceCodeFileList.iterator(); i.hasNext();){
+    for (i = settings.sourceCodeFileList.iterator(); i.hasNext();){
 
         file = (File)i.next();
 
@@ -372,13 +372,13 @@ private void createNodes(DefaultMutableTreeNode top)
 
     //create a branch node (branch specified by the true parameter)
     category = new DefaultMutableTreeNode(new FileCategory(
-                        "Linker Command Files", globals.linkerFileList), true);
+                       "Linker Command Files", settings.linkerFileList), true);
     top.add(category);
 
     //create a leaf node for each file in the list
     //(leaf type specified by the false parameter)
 
-    for (i = globals.linkerFileList.iterator(); i.hasNext();){
+    for (i = settings.linkerFileList.iterator(); i.hasNext();){
 
         file = (File)i.next();
 
@@ -392,13 +392,13 @@ private void createNodes(DefaultMutableTreeNode top)
     //create a branch node (branch specified by the true parameter)
 
     category = new DefaultMutableTreeNode(new FileCategory(
-                "Documentation and Note Files", globals.docFileList), true);
+                "Documentation and Note Files", settings.docFileList), true);
     top.add(category);
 
     //create a leaf node for each file in the list
     //(leaf type specified by the false parameter)
 
-    for (i = globals.docFileList.iterator(); i.hasNext();){
+    for (i = settings.docFileList.iterator(); i.hasNext();){
 
         file = (File)i.next();
 
@@ -503,7 +503,7 @@ public DefaultMutableTreeNode addFile()
 
     if (!parentNode.getAllowsChildren()) {return(null);}
 
-    final JFileChooser fc = new JFileChooser(globals.getProjectPath());
+    final JFileChooser fc = new JFileChooser(settings.getProjectPath());
 
     int returnVal = fc.showOpenDialog(this);
 

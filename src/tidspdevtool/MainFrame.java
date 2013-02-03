@@ -47,7 +47,7 @@ import javax.swing.event.DocumentListener;
 class MainFrame extends JFrame implements WindowListener, ActionListener,
                         ChangeListener, ComponentListener, DocumentListener{
 
-    Globals globals;
+    Settings settings;
     Project project;
 
     JDialog measureDialog;
@@ -95,7 +95,7 @@ public void init()
     //makes sure all frames are created with the look and feel specified above
     JFrame.setDefaultLookAndFeelDecorated(true);
 
-    //load globals, project file, and all other settings
+    //load settings, project file, and all other settings
     loadSettings();
 
     //create various decimal formats
@@ -116,11 +116,11 @@ public void init()
     //add the desktop panel to the main frame
     //the desktop panel handles child windows such that and IDE can be created
     getContentPane().add(desktop, BorderLayout.CENTER);
-    Globals.setSizes(this, 1024, 725);
+    Settings.setSizes(this, 1024, 725);
 
-    //create a main menu, passing globals as the object to be installed as
+    //create a main menu, passing settings as the object to be installed as
     //the action and item listener for the menu
-    //mainFrame.setJMenuBar(mainMenu = new MainMenu(globals));
+    //mainFrame.setJMenuBar(mainMenu = new MainMenu(settings));
 
     setVisible(true);
 
@@ -139,7 +139,7 @@ public void init()
 
     ProjectFrame pFrame =
         new ProjectFrame("Project", resizable, closeable, maximizable,
-            iconifiable, globals);
+            iconifiable, settings);
 
     pFrame.init();
 
@@ -196,13 +196,13 @@ public void init()
 private void loadSettings()
 {
 
-    globals = new Globals();
+    settings = new Settings();
 
-    project = new Project(globals);
+    project = new Project(settings);
 
-    globals.sourceCodeFileList = project.sourceCodeFileList.fileList;
-    globals.linkerFileList = project.linkerFileList.fileList;
-    globals.docFileList = project.docFileList.fileList;
+    settings.sourceCodeFileList = project.sourceCodeFileList.fileList;
+    settings.linkerFileList = project.linkerFileList.fileList;
+    settings.docFileList = project.docFileList.fileList;
 
 }//end of MainFrame::loadSettings
 //-----------------------------------------------------------------------------

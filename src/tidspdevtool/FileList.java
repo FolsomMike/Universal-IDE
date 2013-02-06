@@ -29,15 +29,7 @@ import java.util.*;
 //
 //
 
-public class FileList extends Object{
-
-
-    Settings settings;
-
-    //public String getFileListFullPath(){return FileListFullPath;}
-    //public void setFileListFullPath(String pS){FileListFullPath = pS;}
-
-    public ArrayList<File> fileList = new ArrayList<File>();
+public class FileList extends CategoryList{
 
 
 //-----------------------------------------------------------------------------
@@ -59,6 +51,9 @@ FileList()
 public void loadFile(IniFile pIni, String pCategory) throws IOException
 {
 
+    //clear out any entries already in the list in case this is a reload
+    clearList();
+
     int numFiles;
 
     numFiles = pIni.readInt(pCategory, "Number of Files", 0);
@@ -71,7 +66,7 @@ public void loadFile(IniFile pIni, String pCategory) throws IOException
 
         file = pIni.readString(pCategory, key, "");
 
-        fileList.add(new File(file));
+        list.add(new File(file));
 
     }
 
@@ -93,7 +88,7 @@ public void saveFile(IniFile pIni, String pCategory) throws IOException
     Iterator i;
     File file;
 
-    for (i = fileList.iterator(); i.hasNext();){
+    for (i = list.iterator(); i.hasNext();){
 
         file = (File)i.next();
 

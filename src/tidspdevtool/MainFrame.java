@@ -18,6 +18,8 @@ package tidspdevtool;
 
 //-----------------------------------------------------------------------------
 
+import DSPSimulation.Chip;
+import SpecificChips.TMS320VC5441;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagLayout;
@@ -49,7 +51,10 @@ class MainFrame extends JFrame implements WindowListener, ActionListener,
                         ChangeListener, ComponentListener, DocumentListener{
 
     Settings settings;
+    MainMenu mainMenu;
     Project project;
+
+    Chip chip;
 
     JDialog measureDialog;
     GridBagLayout gridBag;
@@ -73,11 +78,14 @@ public MainFrame(String pTitle)
 //-----------------------------------------------------------------------------
 // MainFrame::init
 //
-// Call this after construction to setup the object
+// Initializes new objects. Should be called immediately after instantiation.
 //
 
 public void init()
 {
+
+    //choose which chip to simulate
+    chip = new TMS320VC5441();
 
     //turn off default bold for Metal look and feel
     UIManager.put("swing.boldMetal", Boolean.FALSE);
@@ -89,15 +97,21 @@ public void init()
 
     try {
         UIManager.setLookAndFeel(
-            UIManager.getSystemLookAndFeelClassName());
+            UIManager.getCrossPlatformLookAndFeelClassName());
     }
     catch (Exception e) {}
 
     //makes sure all frames are created with the look and feel specified above
     JFrame.setDefaultLookAndFeelDecorated(true);
 
-    //load settings, project file, and all other settings
+    //create project, settings, load value from file
     loadSettings();
+
+    //create a main menu, passing this as the object to be installed as
+    //the action and item listener for the menu
+    mainMenu = new MainMenu(this);
+    mainMenu.init();
+    setJMenuBar(mainMenu);
 
     //create various decimal formats
     decimalFormats = new DecimalFormat[1];
@@ -138,24 +152,25 @@ public void init()
 
     int width, height;
 
-    ProjectFrame pFrame =
+    ProjectFrame projectFrame =
         new ProjectFrame("Project", resizable, closeable, maximizable,
             iconifiable, settings);
+    projectFrame.init();
 
-    pFrame.init();
+    settings.projectFrame = projectFrame;
 
     // set an initial size for the project window
-    width = 200; height = 500; pFrame.setSize(width, height);
+    width = 200; height = 500; projectFrame.setSize(width, height);
 
     // by default, internal frames are not visible; make it visible
-    pFrame.setVisible(true);
+    projectFrame.setVisible(true);
 
-    desktop.add(pFrame);
+    desktop.add(projectFrame);
 
     //force layout so location and width of the project window can be retrieved
     pack();
 
-    int editorWindowX = pFrame.getX() + pFrame.getWidth();
+    int editorWindowX = projectFrame.getX() + projectFrame.getWidth();
 
     String title = "Editor";
     EditorFrame eFrame =
@@ -190,7 +205,7 @@ public void init()
 //-----------------------------------------------------------------------------
 // MainFrame::loadSettings
 //
-// loads global values, project file, and all other settings required upon
+// Loads global values, project file, and all other settings required upon
 // program startup.
 //
 
@@ -198,12 +213,15 @@ private void loadSettings()
 {
 
     settings = new Settings();
+    settings.init();
 
     project = new Project(settings);
+    project.init();
 
-    settings.sourceCodeFileList = project.sourceCodeFileList.fileList;
-    settings.linkerFileList = project.linkerFileList.fileList;
-    settings.docFileList = project.docFileList.fileList;
+    settings.mainFrame = this;
+    settings.sourceCodeFileList = project.sourceCodeFileList.list;
+    settings.linkerFileList = project.linkerFileList.list;
+    settings.docFileList = project.docFileList.list;
 
 }//end of MainFrame::loadSettings
 //-----------------------------------------------------------------------------
@@ -211,13 +229,18 @@ private void loadSettings()
 //-----------------------------------------------------------------------------
 // MainFrame::actionPerformed
 //
-// Responds to button events.
+// Responds to button events, menu events, etc.
 //
 
 @Override
 public void actionPerformed(ActionEvent e)
 {
 
+    //this part handles saving all data
+    if ("Load Project".equals(e.getActionCommand())) {
+        project.chooseProject();
+        return;
+    }
 
 }//end of MainFrame::actionPerformed
 //-----------------------------------------------------------------------------
@@ -319,6 +342,7 @@ public void changedUpdate(DocumentEvent ev)
 public void windowClosing(WindowEvent e)
 {
 
+    settings.saveFile();
     project.saveFile();
 
 }//end of MainFrame::windowClosing

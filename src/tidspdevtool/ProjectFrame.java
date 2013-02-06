@@ -38,7 +38,7 @@ import javax.swing.tree.TreeSelectionModel;
 //
 //
 
-class ProjectFrame extends JInternalFrame implements
+public class ProjectFrame extends JInternalFrame implements
                        TreeSelectionListener, TreeModelListener, ActionListener
 {
 
@@ -98,9 +98,8 @@ public void init(){
     treeStuffPanel.setLayout(new GridLayout(1,0));
     mainPanel.add(treeStuffPanel);
 
-    //create the root node and all children
-    rootNode = new DefaultMutableTreeNode(settings.getProjectName());
-    createNodes(rootNode);
+    //create the root node and all its children
+    createRootNode();
 
     // Force the tree model to the DefaultTreeModel so useful methods are sure
     // to be available.
@@ -202,26 +201,16 @@ public void init(){
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// class FileCategory
+// class TreeBranchCategory
 //
-// Stores info for a file category.
+// Provides a base class for a category of items used as an Object for a
+// tree branch node.
 //
 
-private class FileCategory {
+private class TreeBranchCategory {
 
     String name;
-    ArrayList<File> fileList;
-
-//-----------------------------------------------------------------------------
-// FileCategory::FileCategory (constructor)
-//
-
-public FileCategory(String pName, ArrayList<File> pFileList) {
-
-    name = pName; fileList = pFileList;
-
-}//end of FileCategory::FileCategory (constructor)
-//-----------------------------------------------------------------------------
+    ArrayList<File> list;
 
 //-----------------------------------------------------------------------------
 // FileCategory::toString
@@ -233,6 +222,29 @@ public String toString() {
     return name;
 
 }//end of FileCategory::toString
+//-----------------------------------------------------------------------------
+
+}//end of class TreeBranchCategory
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// class FileCategory
+//
+// Stores info for a file category.
+//
+
+private class FileCategory extends TreeBranchCategory {
+
+//-----------------------------------------------------------------------------
+// FileCategory::FileCategory (constructor)
+//
+
+public FileCategory(String pName, ArrayList<File> pList) {
+
+    name = pName; list = pList;
+
+}//end of FileCategory::FileCategory (constructor)
 //-----------------------------------------------------------------------------
 
 }//end of class FileCategory
@@ -339,77 +351,113 @@ private void displayURL(URL url)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// ProjectFrame::createNodes
+// ProjectFrame::setNewRootNode
+//
+// Creates a new root node (which has the name of the project) and installs
+// it as the root node in the tree. This is useful after a different project is
+// loaded or created to update the tree display with the new info.
+//
+// This is better than erasing all the child nodes because it updates the
+// root node with the name of the new project.
 //
 
-private void createNodes(DefaultMutableTreeNode top)
+public void setNewRootNode()
+{
+
+    rootNode = new DefaultMutableTreeNode(settings.getProjectName());
+    createNodes(rootNode);
+    treeModel.setRoot(rootNode);
+
+}//end of ProjectFrame::setNewRootNode
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// ProjectFrame::createRootNode
+//
+// Creates the root node (which has the name of the project) for the project
+// tree and all the children nodes.
+//
+
+private void createRootNode()
+{
+
+    rootNode = new DefaultMutableTreeNode(settings.getProjectName());
+    createNodes(rootNode);
+
+}//end of ProjectFrame::createRootNode
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// ProjectFrame::createNodes
+//
+// Creates a branch node for each category of files or other objects and
+// creates leaf nodes under each branch to represent the objects belonging
+// to the branch.
+//
+
+private void createNodes(DefaultMutableTreeNode pTop)
+{
+
+    createBranchNode(pTop,
+                 new FileCategory("Source Code", settings.sourceCodeFileList));
+
+    createBranchNode(pTop,
+            new FileCategory("Linker Command Files", settings.linkerFileList));
+
+    createBranchNode(pTop,
+       new FileCategory("Documentation and Note Files", settings.docFileList));
+
+}//end of ProjectFrame::createNodes
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// ProjectFrame::createBranchNode
+//
+// Creates a single branch node attached to object pBranchObject and then
+// adds leaf nodes for each object in pBranchObject's array list.
+//
+// The branch will be added to tree node pTop.
+//
+// For example, the branch node can be attached to a FileCategory object which
+// has an array list of files. A child leaf will then be created for each file
+// in the list, each attached to FileInfo object which contains information
+// for a file.
+//
+// Note that the FileCategory and FileInfo classes each have a toString
+// function. The tree calls that function to get the name for the branch or
+// the leaf.
+//
+
+private void createBranchNode(DefaultMutableTreeNode pTop,
+                                            TreeBranchCategory pBranchObject)
 {
 
     DefaultMutableTreeNode category;
     DefaultMutableTreeNode leaf;
 
-    //create a branch node (branch specified by the true parameter)
-    category = new DefaultMutableTreeNode(
-            new FileCategory("Source Code", settings.sourceCodeFileList), true);
-    top.add(category);
-
-    //create a leaf node for each file in the list
-    //(leaf type specified by the false parameter)
-
     Iterator i;
     File file;
 
-    for (i = settings.sourceCodeFileList.iterator(); i.hasNext();){
-
-        file = (File)i.next();
-
-        leaf = new DefaultMutableTreeNode(
-           new FileInfo(file.getName(), file.getPath()),
-           false);
-        category.add(leaf);
-
-    }
-
-    //create a branch node (branch specified by the true parameter)
-    category = new DefaultMutableTreeNode(new FileCategory(
-                       "Linker Command Files", settings.linkerFileList), true);
-    top.add(category);
-
-    //create a leaf node for each file in the list
-    //(leaf type specified by the false parameter)
-
-    for (i = settings.linkerFileList.iterator(); i.hasNext();){
-
-        file = (File)i.next();
-
-        leaf = new DefaultMutableTreeNode(
-           new FileInfo(file.getName(), file.getPath()),
-           false);
-        category.add(leaf);
-
-    }
-
     //create a branch node (branch specified by the true parameter)
 
-    category = new DefaultMutableTreeNode(new FileCategory(
-                "Documentation and Note Files", settings.docFileList), true);
-    top.add(category);
+    category = new DefaultMutableTreeNode(pBranchObject, true);
+    pTop.add(category);
 
-    //create a leaf node for each file in the list
-    //(leaf type specified by the false parameter)
+    //create a leaf node for each object in the branch object's array list
+    //(the branch could be an object holding a list of books, for example)
+    //(node type of leaf is forced by the false parameter)
 
-    for (i = settings.docFileList.iterator(); i.hasNext();){
+    for (i = pBranchObject.list.iterator(); i.hasNext();){
 
         file = (File)i.next();
 
         leaf = new DefaultMutableTreeNode(
-           new FileInfo(file.getName(), file.getPath()),
-           false);
+                       new FileInfo(file.getName(), file.getPath()), false);
         category.add(leaf);
 
     }
 
-}//end of ProjectFrame::createNodes
+}//end of ProjectFrame::createBranchNode
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -458,7 +506,7 @@ public void removeCurrentNode()
 
             //get the file list for the selected file category
             FileCategory fileCat = (FileCategory) parent.getUserObject();
-            ArrayList<File> fileList = fileCat.fileList;
+            ArrayList<File> fileList = fileCat.list;
 
             //remove the deleted file from the list
             Object nodeInfo = currentNode.getUserObject();
@@ -486,6 +534,8 @@ public void removeCurrentNode()
 public DefaultMutableTreeNode addFile()
 {
 
+    //get the currently selected node in the tree
+
     DefaultMutableTreeNode parentNode;
     TreePath parentPath = tree.getSelectionPath();
 
@@ -493,7 +543,8 @@ public DefaultMutableTreeNode addFile()
         parentNode = rootNode;
     }
     else {
-        parentNode = (DefaultMutableTreeNode) (parentPath.getLastPathComponent());
+        parentNode =
+                  (DefaultMutableTreeNode) (parentPath.getLastPathComponent());
     }
 
     //exit if the parent does not allow children -- an exception will be thrown
@@ -514,7 +565,7 @@ public DefaultMutableTreeNode addFile()
 
     //get the file list for the selected file category
     FileCategory fileCat = (FileCategory) parentNode.getUserObject();
-    ArrayList<File> fileList = fileCat.fileList;
+    ArrayList<File> fileList = fileCat.list;
 
     //do nothing if the file is already in the list
     if (fileList.contains(newFile)) {return(null);}

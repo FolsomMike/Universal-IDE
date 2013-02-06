@@ -20,10 +20,11 @@
 package tidspdevtool;
 
 
+import java.awt.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import java.awt.*;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -33,6 +34,8 @@ import java.awt.*;
 
 public class Settings extends Object{
 
+    public JFrame mainFrame;
+    public ProjectFrame projectFrame;
 
     public ArrayList<File> sourceCodeFileList;
     public ArrayList<File> linkerFileList;
@@ -61,9 +64,21 @@ public class Settings extends Object{
 Settings()
 {
 
+}//end of Settings::Settings (constructor)
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Settings::init
+//
+// Initializes new objects. Should be called immediately after instantiation.
+//
+
+public void init()
+{
+
     loadFile();
 
-}//end of Settings::Settings (constructor)
+}//end of Settings::init
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -75,21 +90,14 @@ Settings()
 private void loadFile()
 {
 
-    IniFile ini = null;
+    IniFile ini;
 
 
     try {
 
         ini = new IniFile("Settings/Settings.ini", "UTF-8");
 
-        setProjectFullPath(
-                        ini.readString("General", "Current Project Path", ""));
-
-        File project = new File(getProjectFullPath());
-
-        projectPath = project.getParent();
-
-        projectName = project.getName();
+        setNamesAndPaths(ini.readString("General", "Current Project Path", ""));
 
     }
     catch(IOException e){
@@ -97,6 +105,26 @@ private void loadFile()
     }
 
 }//end of Settings::loadFile
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Settings::setNamesAndPaths
+//
+// Sets the project's full path, path, and name.
+//
+
+public void setNamesAndPaths(String pFullPath)
+{
+
+    setProjectFullPath(pFullPath);
+
+    File project = new File(getProjectFullPath());
+
+    setProjectPath(project.getParent());
+
+    setProjectName(project.getName());
+
+}//end of Settings::setNamesAndPaths
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -108,7 +136,7 @@ private void loadFile()
 public void saveFile()
 {
 
-    IniFile ini = null;
+    IniFile ini;
 
     try {
 
@@ -117,11 +145,12 @@ public void saveFile()
         ini.writeString(
                       "General", "Current Project Path", getProjectFullPath());
 
+        ini.save(); //write the file to disk
+
     }
     catch(IOException e){
         Settings.errorMsg("Error saving Globals file");
     }
-
 
 }//end of Settings::saveFile
 //-----------------------------------------------------------------------------

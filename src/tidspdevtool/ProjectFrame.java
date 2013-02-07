@@ -39,7 +39,7 @@ import javax.swing.tree.TreeSelectionModel;
 //
 
 public class ProjectFrame extends JInternalFrame implements
-                       TreeSelectionListener, TreeModelListener, ActionListener
+        TreeSelectionListener, TreeModelListener, ActionListener
 {
 
     JTextPane textPane;
@@ -181,6 +181,9 @@ public void init(){
     //put extra space at the botom of the panel
     mainPanel.add(Box.createVerticalGlue());
 
+    MouseListener ml = new TreeMouseListener();
+    tree.addMouseListener(ml);
+
     /*
     //debug mks
     JButton addButton1 = new JButton("Add");
@@ -197,6 +200,44 @@ public void init(){
      */
 
 }//end of ProjectFrame::init
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// class TreeMouseListener
+//
+
+class TreeMouseListener extends MouseAdapter
+{
+
+
+//-----------------------------------------------------------------------------
+// TreeMouseListener::mousePressed
+//
+
+@Override
+public void mousePressed(MouseEvent e) {
+
+    int selRow = tree.getRowForLocation(e.getX(), e.getY());
+     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+     if(selRow != -1) {
+         if(e.getClickCount() == 1) {
+    //             mySingleClick(selRow, selPath);
+         }
+         else if(e.getClickCount() == 2) {
+             DefaultMutableTreeNode node =
+                     (DefaultMutableTreeNode)selPath.getLastPathComponent();
+             FileInfo fi = (FileInfo)node.getUserObject();
+            //load the double-clicked file into an editor pane
+            settings.editorFrame.loadFile(fi.fileName, fi.fullPath);
+         }
+     }
+
+}//end of TreeMouseListener::mousePressed
+//-----------------------------------------------------------------------------
+
+}//end of class TreeMouseListener
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -225,6 +266,7 @@ public String toString() {
 //-----------------------------------------------------------------------------
 
 }//end of class TreeBranchCategory
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

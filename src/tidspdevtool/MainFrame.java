@@ -173,25 +173,28 @@ public void init()
     int editorWindowX = projectFrame.getX() + projectFrame.getWidth();
 
     String title = "Editor";
-    EditorFrame eFrame =
+    EditorFrame editorFrame =
         new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
-    eFrame.init();
+    editorFrame.init();
+
+    settings.editorFrame = editorFrame;
 
     // position the editor window just right of the project window
-    eFrame.setLocation(new Point(editorWindowX, 0));
+    editorFrame.setLocation(new Point(editorWindowX, 0));
 
     // set an initial size for the editor window
-    width = 1000; height = 680; eFrame.setSize(width, height);
+    width = 1000; height = 680; editorFrame.setSize(width, height);
 
     // by default, internal frames are not visible; make it visible
-    eFrame.setVisible(true);
+    editorFrame.setVisible(true);
 
-    desktop.add(eFrame);
+    desktop.add(editorFrame);
 
-    eFrame.loadFile(
+    editorFrame.loadFile(
                 "Capulin UT DSP.asm", "ASM Source Files//Capulin UT DSP.asm");
 
-    eFrame.loadFile("Documentation.txt", "ASM Source Files//Documentation.txt");
+    editorFrame.loadFile(
+                    "Documentation.txt", "ASM Source Files//Documentation.txt");
 
     //force layout of GUI
     pack();

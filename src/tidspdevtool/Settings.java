@@ -36,6 +36,7 @@ public class Settings extends Object{
 
     public JFrame mainFrame;
     public ProjectFrame projectFrame;
+    EditorFrame editorFrame;
 
     public ArrayList<File> sourceCodeFileList;
     public ArrayList<File> linkerFileList;

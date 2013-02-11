@@ -9,6 +9,10 @@
 * associated components such as status windows, status labels, undo controls,
 * etc.
 *
+* See notes at the top of EditorFrame.java for a detailed overview of the
+* relationship between EditorFrame, EditorRig, EditorTabPane, the JTextPane,
+* and the EditorKit used by the JTextPane.
+*
 * Open Source Policy:
 *
 * This source code is Public Domain and free to any interested party.  Any
@@ -22,13 +26,12 @@ package tidspdevtool;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
-
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
-import javax.swing.undo.*;
 import java.io.*;
+import java.util.HashMap;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.undo.*;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -48,7 +51,8 @@ public class EditorRig extends JPanel{
 
     JTextPane textPane;
     AbstractDocument doc = null;
-    JTextArea changeLog;
+    JPanel toolPanel;
+    TextSearcher textSearcher;
     HashMap<Object, Action> actions;
 
 //-----------------------------------------------------------------------------
@@ -58,7 +62,7 @@ public class EditorRig extends JPanel{
 public EditorRig()
 {
 
-    super(new BorderLayout());
+
 
 }//end of EditorRig::EditorRig (constructor)
 //-----------------------------------------------------------------------------
@@ -74,8 +78,11 @@ public EditorRig()
 public void init(UndoableEditListener pUndoableEditListener)
 {
 
+    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
     //create the text pane and configure it
     textPane = new JTextPane();
+    textPane.setAlignmentX(Component.LEFT_ALIGNMENT);
     textPane.setCaretPosition(0);
     textPane.setMargin(new Insets(5,5,5,5));
     StyledDocument styledDoc = textPane.getStyledDocument();
@@ -90,30 +97,32 @@ public void init(UndoableEditListener pUndoableEditListener)
     }
 
     JScrollPane scrollPane = new JScrollPane(textPane);
-    scrollPane.setPreferredSize(new Dimension(300, 350));
+    scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+    Settings.setSizes(scrollPane, 800, 535);
 
-    //reate the text area for the status log and configure it
-    changeLog = new JTextArea(5, 2);
-    changeLog.setEditable(false);
-    JScrollPane scrollPaneForLog = new JScrollPane(changeLog);
-    scrollPaneForLog.setPreferredSize(new Dimension(300, 50));
+    //create a panel to hold search tools and status messages
+    toolPanel = new JPanel();
+    toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.LINE_AXIS));
+    toolPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    Settings.setSizes(toolPanel, 800, 33);
 
-    //create a split pane for the change log and the text area
-    JSplitPane splitPane = new JSplitPane(
-                                           JSplitPane.VERTICAL_SPLIT,
-                                           scrollPane, scrollPaneForLog);
-    splitPane.setOneTouchExpandable(true);
-    splitPane.setDividerLocation(550);
+    //create a text search panel and add it to the tool panel
+    textSearcher = new TextSearcher();
+    textSearcher.init();
+    textSearcher.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+    toolPanel.add(textSearcher);
 
-    //create the status area
-    JPanel statusPane = new JPanel(new GridLayout(1, 1));
+    //create a status message panel and add it to the tool panel
+    JPanel statusPanel = new JPanel(new GridLayout(1, 1));
+    toolPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     CaretListenerLabel caretListenerLabel =
                                     new CaretListenerLabel("Caret Status");
-    statusPane.add(caretListenerLabel);
+    statusPanel.add(caretListenerLabel);
+    toolPanel.add(statusPanel);
 
     //add the components to the editor rig panel
-    add(splitPane, BorderLayout.CENTER);
-    add(statusPane, BorderLayout.PAGE_END);
+    add(scrollPane);
+    add(toolPanel);
 
     //Start watching for undoable edits and caret changes.
     doc.addUndoableEditListener(pUndoableEditListener);
@@ -133,9 +142,15 @@ public void init(UndoableEditListener pUndoableEditListener)
 //-----------------------------------------------------------------------------
 // EditorRig::addBindings
 //
-// Connect keyboard shortcuts to actions.
+// Connect keyboard shortcuts to actions available in the editor kit currently
+// being used by the textPane.
 //
-// These shortcuts are compatible with the "Emacs" type of text editors.
+// Note that the ActionMap is already in place for the JTextPane via its
+// current EditorKit. This just puts the names for those actions into the
+// InputMap to connect the key stroke with the action.
+//
+// See EditorRig.createActionTable and the comments at the top of
+// EditorFrame.java for more details.
 //
 
 private void addBindings()
@@ -145,21 +160,17 @@ private void addBindings()
 
     InputMap inputMap = textPane.getInputMap();
 
-    //Ctrl-b to go backward one character
-    KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.CTRL_MASK);
-    inputMap.put(key, DefaultEditorKit.backwardAction);
+    KeyStroke key;
 
-    //Ctrl-f to go forward one character
+    //Ctrl-f to invoke the find function
     key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
     inputMap.put(key, DefaultEditorKit.forwardAction);
 
+    // example of using an action from the textpane's editor kit
     //Ctrl-p to go up one line
-    key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
-    inputMap.put(key, DefaultEditorKit.upAction);
+    //key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
+    //inputMap.put(key, DefaultEditorKit.upAction);
 
-    //Ctrl-n to go down one line
-    key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
-    inputMap.put(key, DefaultEditorKit.downAction);
 
 }//end of EditorRig::addBindings
 //-----------------------------------------------------------------------------
@@ -169,6 +180,13 @@ private void addBindings()
 //
 // Creates the edit menu using custom actions and actions available from the
 // editor kit for the text editor component.
+//
+// EditorRig.createActionTable should be called first to create a HashMap of
+// the actions available for the JTextPane via the EditorKit in use at any
+// given time.
+//
+// See EditorRig.createActionTable and the comments at the top of
+// EditorFrame.java for more details.
 //
 
 public JMenu createEditMenu(
@@ -213,6 +231,8 @@ public JMenu createStyleMenu() {
 
     action = new StyledEditorKit.BoldAction();
     action.putValue(Action.NAME, "Bold");
+    //this is how you add a mnemonic to an action? doesn't work here
+    //action.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_Z);
     menu.add(action);
 
     action = new StyledEditorKit.ItalicAction();
@@ -333,9 +353,17 @@ protected SimpleAttributeSet[] initSampleAttributes(int length) {
 // Creates a hash table with a list of actions and their names as retrieved
 // from the editor kit of pTextComponent.
 //
-// JTextComponent objects have built in actions, each of which has a string
-// name.  These can be retrieved and used to build menus or to connect with
-// keystrokes to allow the user to execute the various actions.
+// Note that the ActionMap is already in place for the JTextPane via its
+// current EditorKit. This just gets a list of those actions. The programmer
+// then adds to the JTextPanes InputMap to connect keystrokes to actions.
+//
+// JTextComponent objects have built in actions supplied by the EditorKit in
+// use at any given time. Each Action of has a string name.  These can be
+// retrieved and used to build menus or to connect with keystrokes to allow the
+// user to execute the various actions. They can also be added to menus.
+//
+// See EditorRig.addBindings and EditorRig.createEditMenu and the comments at
+// the top of EditorFrame.java for more details.
 //
 
 private HashMap<Object, Action> createActionTable(JTextComponent pTextComponent)
@@ -393,7 +421,7 @@ public void loadFile(String pFilepath)
 
         int x = 0;
 
-        String line = null;
+        String line;
         while ((line = reader.readLine()) != null) {
             buffer.append(line).append("\n");
         }
@@ -493,7 +521,7 @@ public void setJTextPaneFont(JTextPane jtp, Font font, Color c) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// EditorRig::setJTextPaneFont
+// EditorRig::findTabContainingDoc
 //
 // Sets the font for the entire contents of pJTextPane.
 //
@@ -504,6 +532,130 @@ public void findTabContainingDoc(JTextPane jtp, Font font, Color c) {
 
 
 }//end of EditorRig::findTabContaingingDoc
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorRig::findText
+
+// debug mks -- delete this function
+
+public void GetTextToFindAndFind(
+                    String pTextToFind, int pIgnoreCase, int pFindCounter){
+
+    // findCounter = 0 or 1. 0 represents find and 1 represents findCounter.
+    String currentText = "";
+    String replacer = "";
+    StringReader readText;
+    BufferedReader readBuffer;
+
+    if(pFindCounter ==0){
+
+        if(pTextToFind == null){
+            JOptionPane.showMessageDialog(
+                                        null, "Please Enter Text.", "Error", 0);
+        }
+        else if(pTextToFind.isEmpty()){
+            JOptionPane.showMessageDialog(
+                                        null, "Please Enter Text.", "Error", 0);
+        }
+    else{
+    // Use any Character. But I a suggest to use a character from an
+    //Encrypted file.
+
+    replacer = "¥";
+
+    currentText = textPane.getText();
+
+    if(pIgnoreCase==1){
+        currentText = currentText.toLowerCase();
+        pTextToFind = pTextToFind.toLowerCase();
+    }
+
+    int counter = 0;
+
+    readText = new StringReader(currentText);
+    readBuffer = new BufferedReader(readText);
+
+    try {
+        String Line = readBuffer.readLine();
+        int found = 0;
+        while(Line!=null || found != 1){
+            if(Line.contains(pTextToFind)){
+                Line = null;
+                found = 1;
+            }
+            if(Line!=null){
+                Line = readBuffer.readLine();
+                counter = counter + 1;
+            }
+        }
+        if(found == 1){
+            textPane.setSelectionStart(
+                           currentText.indexOf(pTextToFind) - counter);
+            textPane.setSelectionEnd(currentText.indexOf(
+                        pTextToFind) + pTextToFind.length() - counter);
+            int counter2 = 1;
+            while(counter2!=pTextToFind.length()){
+                replacer = replacer + "¥";
+                counter2 = counter2 + 1;
+            }
+            currentText =
+                       currentText.replaceFirst(pTextToFind, replacer);
+            pFindCounter = 1;
+        }
+        else{
+            JOptionPane.showMessageDialog(
+                                    null, "No Matches.", "Message", 0);
+            }
+
+        }
+        catch (IOException e) {
+            //obsolete call -> e.printStackTrace();
+    }  catch(NullPointerException e){
+        JOptionPane.showMessageDialog(
+                                    null, "No Matches.", "Message", 0);
+    }
+    }
+}
+else{
+int counter = 0;
+readText = new StringReader(currentText);
+readBuffer = new BufferedReader(readText);
+try {
+    String line = readBuffer.readLine();
+    int found = 0;
+    while(line!=null || found != 1){
+        if(line.contains(pTextToFind)){
+            line = null;
+            found = 1;
+        }
+        if(line!=null){
+            line = readBuffer.readLine();
+            counter = counter + 1;
+        }
+    }
+    if(found == 1){
+        textPane.setSelectionStart(currentText.indexOf(pTextToFind) -
+                                                              counter);
+        textPane.setSelectionEnd(currentText.indexOf(pTextToFind) +
+                                       pTextToFind.length() - counter);
+        currentText = currentText.replaceFirst(pTextToFind, replacer);
+        }
+    else{
+        JOptionPane.showMessageDialog(
+                                    null, "No Matches.", "Message", 0);
+        }
+    }
+     catch(IOException e){
+        //obsolete call -> e.printStackTrace();
+    } catch(NullPointerException e){
+        JOptionPane.showMessageDialog(
+                                    null, "No Matches.", "Message", 0);
+        }
+    }
+
+
+}//end of EditorRig::findText
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

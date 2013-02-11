@@ -105,10 +105,13 @@ public void init(){
     // to be available.
     // The true value sets asksAllowsChildren so that nodes set up as branches
     // (folders) will always be branches even if they have no children and leaf
-    // nodes will always be leafs and cannot have children.
-    // If this value is set to false, then branches change to leaf nodes when
-    // all their children are deleted and leaf nodes change to branches if a
-    // child is added to them.
+    // nodes will always be leafs and cannot have children. By setting true,
+    // the tree respects the allowsChildren setting of each node -- this value
+    // is specified when the node is created so it can be force to be a branch
+    // or a node.
+    // If asksAllowChildren is set to false, then branches change to leaf nodes
+    // when all their children are deleted and leaf nodes change to branches if
+    // a child is added to them.
     // We want to control what is a branch (folder) node and what is a leaf so
     // we set to true.
 
@@ -406,8 +409,7 @@ private void displayURL(URL url)
 public void setNewRootNode()
 {
 
-    rootNode = new DefaultMutableTreeNode(settings.getProjectName());
-    createNodes(rootNode);
+    createRootNode(); //create root node and all the category branches
     treeModel.setRoot(rootNode);
 
 }//end of ProjectFrame::setNewRootNode
@@ -417,7 +419,7 @@ public void setNewRootNode()
 // ProjectFrame::createRootNode
 //
 // Creates the root node (which has the name of the project) for the project
-// tree and all the children nodes.
+// tree and all the children category branches.
 //
 
 private void createRootNode()
@@ -518,52 +520,127 @@ public void removeNodes()
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// ProjectFrame::removeCurrentNode
+// ProjectFrame::removeLeafNodes
+//
+// Remove all leaf nodes, leaving the branch nodes alone.
+//
+// This is useful for emptying the tree of user added objects.. For creating a
+// new project it is preferable to use setNewRootNode as that will also set
+// the name of the root node to the project's name.
+//
+// It is assumed that the DefaultTreeModel has been created with
+// asksAllowsChildren set to true and branch nodes with allowsChildren set to
+// true and leaf nodes with allowsChildren set to false.
+//
+// Note 1: This function is probably not very useful as creating a new root
+//          node is generally preferable. It is left here as an example.
+//
+// Note 2: The enumerator is invalidated each time something is deleted from
+//          the tree, so the enumerator loop is exited and restarted over and
+//          over in a do loop until no leaves remain.
+//
+
+public void removeLeafNodes()
+{
+
+    boolean leafFound;
+
+    do{
+
+        leafFound = false;
+
+        for (Enumeration e = rootNode.breadthFirstEnumeration();
+                                                e.hasMoreElements();) {
+
+            DefaultMutableTreeNode node =
+                                    (DefaultMutableTreeNode) e.nextElement();
+
+            //don't use isLeaf to find leaves -- this gets set even for branch
+            //nodes if  they have no children; use getAllowsChildren instead
+            //as this value is false for leaves
+
+            if (!node.getAllowsChildren()) {
+
+                removeNodeAndCleanUp(node);
+                leafFound = true; //repeat do loop until no leaves found
+                break; //exit enum loop as it is invalid after node removal
+
+            }
+        }//for (Enumeration e...
+    }while(leafFound);
+
+}//end of ProjectFrame::removeLeafNodes
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// ProjectFrame::removeSelectedNode
 //
 // Remove the currently selected node.
 //
 
-public void removeCurrentNode()
+public void removeSelectedNode()
 {
 
     TreePath currentSelection = tree.getSelectionPath();
 
     if (currentSelection != null) {
 
-        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode)
-                                     (currentSelection.getLastPathComponent());
-        DefaultMutableTreeNode parent =
-                             (DefaultMutableTreeNode)(currentNode.getParent());
+        //remove the node from the tree and the object it is attached to from
+        //the list handled by its parent branch
 
-        //don't allow branch nodes to be removed -- only leaf nodes can be
-        //removed this keeps our default categories in place
-        //don't use isLeaf -- this gets set even for branch nodes if they have
-        //no children
-
-        if (currentNode.getAllowsChildren()) {return;}
-
-        if (parent != null) {
-
-            treeModel.removeNodeFromParent(currentNode);
-
-            //get the file list for the selected file category
-            FileCategory fileCat = (FileCategory) parent.getUserObject();
-            ArrayList<File> fileList = fileCat.list;
-
-            //remove the deleted file from the list
-            Object nodeInfo = currentNode.getUserObject();
-            File f = new File(((FileInfo)nodeInfo).fullPath);
-            if (fileList.contains(f)) {fileList.remove(f);}
-
-            return;
-            }
+        removeNodeAndCleanUp(
+             (DefaultMutableTreeNode) currentSelection.getLastPathComponent());
 
         }
 
     // either there was no selection, or the root was selected
     //toolkit.beep();
 
-}//end of ProjectFrame::removeCurrentNode
+}//end of ProjectFrame::removeSelectedNode
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// ProjectFrame::removeNodeAndCleanUp
+//
+// Remove pNode from the tree and cleans up the object to which it is attached
+// by removing that object from the list in which it is contained.
+//
+// Each branch node has a list of the objects attached to the leaves under that
+// branch.
+//
+// If pNode is a branch node, it will not be removed.
+//
+
+public void removeNodeAndCleanUp(DefaultMutableTreeNode pNode)
+{
+
+    //don't allow branch nodes to be removed -- only leaf nodes can be
+    //removed this keeps our default categories in place
+    //don't use isLeaf to check for branch/leaf -- this gets set even for
+    //branch nodes if they have no children
+
+    if (pNode.getAllowsChildren()) {return;}
+
+    //get the parent, which for a leaf should be a branch
+
+    DefaultMutableTreeNode parent = (DefaultMutableTreeNode)(pNode.getParent());
+
+    if (parent != null) {
+
+        //get the file list for the selected file category
+        FileCategory fileCat = (FileCategory) parent.getUserObject();
+        ArrayList<File> fileList = fileCat.list;
+
+        //remove  from the list the file attached to the node to be removed
+        Object nodeInfo = pNode.getUserObject();
+        File f = new File(((FileInfo)nodeInfo).fullPath);
+        if (fileList.contains(f)) {fileList.remove(f);}
+
+        treeModel.removeNodeFromParent(pNode);
+
+        }
+
+}//end of ProjectFrame::removeNodeAndCleanUp
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -783,7 +860,7 @@ public void actionPerformed(ActionEvent e) {
     else
     if (REMOVE_NODE_COMMAND.equals(command)) {
         // remove button clicked
-        removeCurrentNode();
+        removeSelectedNode();
     }
     else
     if (CLEAR_NODE_COMMAND.equals(command)) {

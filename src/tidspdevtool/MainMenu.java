@@ -40,6 +40,7 @@ class MainMenu extends JMenuBar
     JMenuItem saveFile;
     JMenuItem loadProject;
     JMenuItem saveProject;
+    JMenuItem newProject;
     JMenuItem exit;
 
 
@@ -94,12 +95,12 @@ public void init()
     loadProject.addActionListener(actionListener);
     fileMenu.add(loadProject);
 
-    //File/Save Project menu item
-    saveProject = new JMenuItem("Save Project");
-    saveProject.setMnemonic(KeyEvent.VK_R);
-    saveProject.setToolTipText("Save Project");
-    saveProject.addActionListener(actionListener);
-    fileMenu.add(saveProject);
+    //File/New Project menu item
+    newProject = new JMenuItem("New Project");
+    newProject.setMnemonic(KeyEvent.VK_R);
+    newProject.setToolTipText("New Project");
+    newProject.addActionListener(actionListener);
+    fileMenu.add(newProject);
 
 }//end of MainMenu::init
 //-----------------------------------------------------------------------------

@@ -22,6 +22,7 @@ package tidspdevtool;
 
 import java.io.*;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 //-----------------------------------------------------------------------------
@@ -103,6 +104,60 @@ public void chooseProject()
     settings.projectFrame.setNewRootNode();
 
 }//end of Project::chooseProject
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Project::newProject
+//
+// Allows the user to browse to a foler and create a new blank project there.
+//
+
+public void newProject()
+{
+
+    final JFileChooser fc = new JFileChooser(settings.getProjectPath());
+
+    fileFilter.setExtension(".prj");
+    fileFilter.setDescription("Project Files");
+
+    fc.setFileFilter(fileFilter);
+
+    int returnVal = fc.showOpenDialog(settings.mainFrame);
+
+    //bail out if user did not select a file
+    if (returnVal != JFileChooser.APPROVE_OPTION) {return;}
+
+    File newFile = fc.getSelectedFile();
+    String fullPath = newFile.getPath();
+
+    //request confirmation to overwrite if a folder with the job name already
+    //exists in either directory
+    if (newFile.exists()) {
+
+        int n = JOptionPane.showConfirmDialog(
+            settings.mainFrame,
+            "A project with that name already exists. " +
+            "Do you want to overwrite it?",
+            "Confirm Overwrite",
+            JOptionPane.YES_NO_OPTION);
+
+        if (n != JOptionPane.YES_OPTION) {return;}  //bail out if user cancels
+
+    }// if (newFile.exists())
+
+    //add appropriate extension if user did not do so
+    if (!fullPath.toLowerCase().endsWith(".prj")) {fullPath += ".prj";}
+
+    //debug mks -- check for file already exists here
+
+    //store paths and filename
+    settings.setNamesAndPaths(fullPath);
+
+    settings.projectFrame.setNewRootNode();
+
+    saveFile();
+
+}//end of Project::newProject
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

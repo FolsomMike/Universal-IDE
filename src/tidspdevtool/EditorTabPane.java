@@ -7,6 +7,10 @@
 *
 * This class handles a tabbed pane containing editor windows.
 *
+* See notes at the top of EditorFrame.java for a detailed overview of the
+* relationship between EditorFrame, EditorRig, EditorTabPane, the JTextPane,
+* and the EditorKit used by the JTextPane.
+*
 * Open Source Policy:
 *
 * This source code is Public Domain and free to any interested party.  Any

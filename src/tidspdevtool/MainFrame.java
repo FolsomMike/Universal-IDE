@@ -131,7 +131,7 @@ public void init()
     //add the desktop panel to the main frame
     //the desktop panel handles child windows such that and IDE can be created
     getContentPane().add(desktop, BorderLayout.CENTER);
-    Settings.setSizes(this, 1024, 725);
+    Settings.setSizes(this, 1024, 700);
 
     //create a main menu, passing settings as the object to be installed as
     //the action and item listener for the menu
@@ -190,12 +190,6 @@ public void init()
 
     desktop.add(editorFrame);
 
-    editorFrame.loadFile(
-                "Capulin UT DSP.asm", "ASM Source Files//Capulin UT DSP.asm");
-
-    editorFrame.loadFile(
-                    "Documentation.txt", "ASM Source Files//Documentation.txt");
-
     //force layout of GUI
     pack();
 
@@ -239,9 +233,15 @@ private void loadSettings()
 public void actionPerformed(ActionEvent e)
 {
 
-    //this part handles saving all data
+    //allow user to choose a different project and then load it
     if ("Load Project".equals(e.getActionCommand())) {
         project.chooseProject();
+        return;
+    }
+
+    //allow user to create a new project
+    if ("New Project".equals(e.getActionCommand())) {
+        project.newProject();
         return;
     }
 

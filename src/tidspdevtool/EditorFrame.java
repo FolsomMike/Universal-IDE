@@ -7,6 +7,36 @@
 *
 * A JInternalFrame which allows the user to edit a source or text file.
 *
+* This EditorFrame creates an EditorTabPane, each pane of which is used to
+* contain an EditorRig.
+*
+* The EditorRig is a JPanel containing a JTextPane in a JScrollPane and any
+* associated status windows, controls, text boxes which go along with a typical
+* editor (such as line/column display, search boxes, etc.)
+*
+* The JTextPane is tied to an EditorKit. The EditorKit provides functions
+* useful for different types of documents. When a text document is loaded, a
+* specific editor gets installed automatically; for an HTML document a different
+* type of editor gets installed. Each editor has different Actions it can
+* perform on the text. The programmer can get a list of these Actions and tie
+* them to the desired key commands (such as ctrl-F) or add the Actions to a menu
+* for user access. When a new type of document is loaded, the editor might be
+* changed so it is necessary to check the available Actions and refresh any
+* key bindings and menu options. The programmer decides which (if any) actions
+* are tied to which key strokes or displayed on a menu.
+*
+*  EditorRig.createActionTable creates a hash map of action names and the
+*   associated actions available for the JTextPane's current EditorKit. This
+*   makes it more convenient to add those actions to key maps and menus.
+*  EditorRig::getActionByName is used to easily retrieve an action from the
+*   hash map by its name.
+*  EditorRig.addBindings is used to connect key commands with actions
+*  EditorRig.createEditMenu is used to display actions in a menu
+*
+* NOTE: EditorFrame handles undo functions -- these make more sense to be
+*   handled by EditorRig? Move it there? You can do it, Nicky!
+*  (each editor window needs its own undo goodies, extra work done
+*   here to keep those contexts separate -- stupid, no?)
 *
 * Open Source Policy:
 *

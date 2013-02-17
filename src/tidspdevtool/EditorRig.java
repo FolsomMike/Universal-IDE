@@ -107,7 +107,7 @@ public void init(UndoableEditListener pUndoableEditListener)
     Settings.setSizes(toolPanel, 800, 33);
 
     //create a text search panel and add it to the tool panel
-    textSearcher = new TextSearcher();
+    textSearcher = new TextSearcher(textPane);
     textSearcher.init();
     textSearcher.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     toolPanel.add(textSearcher);
@@ -145,6 +145,9 @@ public void init(UndoableEditListener pUndoableEditListener)
 // Connect keyboard shortcuts to actions available in the editor kit currently
 // being used by the textPane.
 //
+// Also adds custom actions provided by this program, such as ctrl-F and F3
+// for text searching.
+//
 // Note that the ActionMap is already in place for the JTextPane via its
 // current EditorKit. This just puts the names for those actions into the
 // InputMap to connect the key stroke with the action.
@@ -162,15 +165,20 @@ private void addBindings()
 
     KeyStroke key;
 
-    //Ctrl-f to invoke the find function
-    key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
-    inputMap.put(key, DefaultEditorKit.forwardAction);
-
     // example of using an action from the textpane's editor kit
     //Ctrl-p to go up one line
     //key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
     //inputMap.put(key, DefaultEditorKit.upAction);
 
+    //add custom actions not part of the text pane's editor kit
+
+    //Ctrl-f to invoke the find function
+    key = KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK);
+    inputMap.put(key, new FindTextAction());
+
+    //F3 to invoke the "find next" function
+    key = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
+    inputMap.put(key, new FindNextAction());
 
 }//end of EditorRig::addBindings
 //-----------------------------------------------------------------------------
@@ -732,6 +740,91 @@ protected void displaySelectionInfo(final int dot, final int mark)
 //-----------------------------------------------------------------------------
 
 }//end of class CaretListenerLabel
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// class FindTextAction
+//
+// Gives focus to the text find window and clears it out so the user can type
+// in text to search for. The TextSearcher class will respond to the "enter"
+// key and search for the text.
+//
+
+protected class FindTextAction extends AbstractAction{
+
+//-----------------------------------------------------------------------------
+// FindTextAction (constructor)
+//
+
+public FindTextAction() {
+
+    //action triggered by "ctrl-F"
+    putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+                                 KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK ));
+
+}//end of FindTextAction (constructor)
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// FindTextAction::actionPerformed
+//
+// Called when the action is triggered by menu, mnemonic, or accelerator key
+// stroke.
+//
+
+public void actionPerformed(ActionEvent e) {
+
+    //set cursor and focus in the text-to-find entry box
+    textSearcher.prepareTextFindField();
+
+}//end of FindTextAction::actionPerformed
+//-----------------------------------------------------------------------------
+
+}//end of class FindTextAction
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// class FindNextAction
+//
+// Calls TextSearcher.findNext to search for the next occurrance of the phrase
+// in the text-to-find box. Starts searching just after the location of the
+// last phrase found.
+//
+
+protected class FindNextAction extends AbstractAction{
+
+//-----------------------------------------------------------------------------
+// FindNextAction (constructor)
+//
+
+public FindNextAction() {
+
+    //action triggered by "ctrl-F"
+    putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
+
+}//end of FindNextAction (constructor)
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// FindNextAction::actionPerformed
+//
+// Called when the action is triggered by menu, mnemonic, or accelerator key
+// stroke.
+//
+
+public void actionPerformed(ActionEvent e) {
+
+    //find the next occurrance of the search phrase
+    textSearcher.findNext();
+
+}//end of FindNextAction::actionPerformed
+//-----------------------------------------------------------------------------
+
+}//end of class FindNextAction
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 

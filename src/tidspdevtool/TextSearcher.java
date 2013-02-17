@@ -24,28 +24,40 @@
 package tidspdevtool;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // class TextSearcher
 //
 
-public class TextSearcher extends JPanel{
+public class TextSearcher extends JPanel implements ActionListener{
 
     JTextField searchTextField;
     JTextField replaceTextField;
+    JCheckBox matchCaseCheckBox;
+    JTextPane textPane;
+
+    int searchStart = 0;
 
 //-----------------------------------------------------------------------------
 // TextSearcher::TextSearcher (constructor)
 //
+// The JTextPane to be searched is passed via pTextPane.
+//
 
-public TextSearcher()
+public TextSearcher(JTextPane pTextPane)
 {
+
+    textPane = pTextPane;
 
 }//end of TextSearcher::TextSearcher (constructor)
 //-----------------------------------------------------------------------------
@@ -58,20 +70,166 @@ public void init()
 {
 
     setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-    Settings.setSizes(this, 300, 20);
+    Settings.setSizes(this, 375, 20);
 
     add(new JLabel("Find"));
     add(Box.createRigidArea(new Dimension(5,0))); //spacer
     searchTextField = new JTextField(20);
+    searchTextField.setActionCommand("<Enter> for Find Phrase Box");
+    searchTextField.addActionListener(this);
     add(searchTextField);
+
     add(Box.createRigidArea(new Dimension(10,0))); //spacer
+
     add(new JLabel("Replace with"));
     add(Box.createRigidArea(new Dimension(5,0))); //spacer
     replaceTextField = new JTextField(20);
+    replaceTextField.setActionCommand("<Enter> for Replacement Phrase Box");
+    replaceTextField.addActionListener(this);
     add(replaceTextField);
+
+    add(Box.createRigidArea(new Dimension(5,0))); //spacer
+
+    matchCaseCheckBox = new JCheckBox("Match Case");
+    add(matchCaseCheckBox);
+
     add(Box.createRigidArea(new Dimension(15,0))); //spacer
 
 }//end of TextSearcher::init
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TextSearcher::prepareTextFindField
+//
+// Clears the text find field and gives it focus so the user can type in the
+// phrase to be searched for. When the user presses the <enter> key while
+// the box has focus, TextSearcher.actionPerformed will be called.
+//
+
+public void prepareTextFindField()
+{
+
+    searchTextField.setText("");
+    searchTextField.requestFocusInWindow();
+
+}//end of TextSearcher::prepareTextFindField
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TextSearcher::findNext
+//
+// Searches textPane for the phrase in the searchTextField starting at the
+// position in the document just after the location where the last search
+// phrase was found.
+//
+// The current text in searchTextField will be searched for, so if the user
+// changes it the search will be for the new text but will still start from the
+// position where the last phrase was found. By leaving the text unchanged, the
+// user can search repeatedly for the same phrase.
+//
+
+public void findNext()
+{
+
+    //search for the phrase; pass false to signify this is not an initial search
+    findText(false);
+
+}//end of TextSearcher::findNext
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TextSearcher::actionPerformed
+//
+// Responds to user actions.
+//
+
+public void actionPerformed(ActionEvent e)
+{
+
+    //handle "Enter" key in the find text window -- perform initial search
+    if ("<Enter> for Find Phrase Box".equals(e.getActionCommand())) {
+        findText(true);
+        return;
+    }
+
+
+}//end of TextSearcher::actionPerformed
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TextSearcher::findText
+//
+// Searches the text of textPane for the phrase in searchTextField.
+//
+// If this is the first search for the phrase, pInitialSearch should be passed
+// as true. Initial searches always start from the top of the document.
+//
+// Note that each time a search is performed (even a repeat of the previous
+// search), a new string of all the text is retrieved from textPane. This
+// ensures that any changes made to the textPane will be part of the next
+// search, but will this work for very large documents or will it be too slow?
+//
+// Multiple examples on the web use String.indexOf to search for the text
+// phrase. As that method does not have an "ignore case" option, those examples
+// convert the entire text from the text pane to upper or lower and also do the
+// same to the search phrase if the search is to ignore case. Converting to
+// upper or lower case returns an entire new string. The old string will get
+// released from memory, but this seems like a memory hogging method. Instead,
+// this class uses the String.regionMatches method which can ignore case. It
+// does require that the program step through the target text character by
+// character; this may take too much time on very large documents.
+//
+
+private void findText(boolean pInitialSearch)
+{
+
+    String document = textPane.getText();
+    String phrase = searchTextField.getText();
+    boolean ignoreCase = !matchCaseCheckBox.isSelected();
+
+    int docLength = document.length();
+    int phraseLength = phrase.length();
+
+    //prepare for first time search of the phrase
+    if (pInitialSearch){
+
+       searchStart = 0; //initial searches always start at top of document
+
+    }
+
+    //protect against starting the search past the end of the document, such as
+    //might happen if the user shortens the document
+    if (searchStart > docLength) searchStart = 0;
+
+    boolean found = false;
+    int i;
+
+    for (i = searchStart; i <= (docLength - phraseLength); i++) {
+        if (document.regionMatches(ignoreCase, i, phrase, 0, phraseLength)) {
+            found = true;
+            replaceTextField.setText("" + i);
+            break;
+       }
+    }
+
+    //if phrase not found, clean up and do nothing more
+    if (!found){
+        searchStart = 0; //start next search from top of document
+        return;
+    }
+
+    //set starting point for subsequent searches
+    searchStart = i + phraseLength;
+
+    boolean b = textPane.isEditable();
+
+    //highlight the found phrase in the document
+    //textPane.setSelectionColor(MColor.BLUE);
+    textPane.requestFocusInWindow();
+    textPane.setCaretPosition(i);
+    textPane.moveCaretPosition(i + phraseLength);
+
+}//end of TextSearcher::findText
 //-----------------------------------------------------------------------------
 
 }//end of class TextSearcher
@@ -169,3 +327,6 @@ return textPosn;
 
 
 */
+
+
+

@@ -230,9 +230,18 @@ public void mousePressed(MouseEvent e) {
          else if(e.getClickCount() == 2) {
              DefaultMutableTreeNode node =
                      (DefaultMutableTreeNode)selPath.getLastPathComponent();
-             FileInfo fi = (FileInfo)node.getUserObject();
-            //load the double-clicked file into an editor pane
-            settings.editorFrame.loadFile(fi.fileName, fi.fullPath);
+
+             try{
+                FileInfo fi = (FileInfo)node.getUserObject();
+                //load the double-clicked file into an editor pane
+                settings.editorFrame.loadFile(fi.fileName, fi.fullPath);
+             }
+             catch(ClassCastException cce){
+                 //do nothing if user clicks on a node which is not a file,
+                 //such as a folder node
+                 return;
+             }
+
          }
      }
 

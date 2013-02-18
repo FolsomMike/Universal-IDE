@@ -41,6 +41,10 @@ import javax.swing.undo.*;
 
 public class EditorRig extends JPanel{
 
+    EditorFrame editorFrame;
+
+    String fullPath; //full path and filename of file loaded into text pane
+
     static final int MAX_CHARACTERS = 1000000;
     String newline = "\n";
 
@@ -55,14 +59,16 @@ public class EditorRig extends JPanel{
     TextSearcher textSearcher;
     HashMap<Object, Action> actions;
 
+    boolean docModified; //true if the document has been modified
+
 //-----------------------------------------------------------------------------
 // EditorRig::EditorRig (constructor)
 //
 
-public EditorRig()
+public EditorRig(EditorFrame pEditorFrame)
 {
 
-
+    editorFrame = pEditorFrame;
 
 }//end of EditorRig::EditorRig (constructor)
 //-----------------------------------------------------------------------------
@@ -128,7 +134,7 @@ public void init(UndoableEditListener pUndoableEditListener)
     doc.addUndoableEditListener(pUndoableEditListener);
 
     textPane.addCaretListener(caretListenerLabel);
-    doc.addDocumentListener(new MyDocumentListener());
+    doc.addDocumentListener(new MyDocumentListener(this));
 
     // create a list of actions available for the text editor component
     actions = createActionTable(textPane);
@@ -414,11 +420,13 @@ private Action getActionByName(String pName)
 //-----------------------------------------------------------------------------
 // EditorRig::loadFile
 //
-// Loads a file from disk.
+// Loads a file into textPane from disk.
 //
 
 public void loadFile(String pFilepath)
 {
+
+    fullPath = pFilepath;
 
     try {
 
@@ -441,6 +449,8 @@ public void loadFile(String pFilepath)
     }
     catch (IOException e) {
 
+        //display error? set fullpath blank? empty the text pane?
+
     }
 
     //Font font = new Font("Serif", Font.PLAIN, 14);
@@ -450,7 +460,74 @@ public void loadFile(String pFilepath)
 
     textPane.setCaretPosition(0);
 
+    //when the file is loaded, the document listeners fire and the modified
+    //flag gets set -- unset it as the document is yet unchanged by the user
+    editorFrame.removeDocModifiedFlag(this);
+
 }//end of EditorRig::loadFile
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorRig::saveFile
+//
+// Saves a file from textPane to disk.
+//
+
+public void saveFile()
+{
+
+    BufferedWriter out;
+
+    try
+    {
+
+        out = new BufferedWriter(new FileWriter(fullPath));
+        textPane.write(out);
+
+        clearDocumentModifiedFlag();
+
+    } catch (IOException e){
+
+    }
+
+}//end of EditorRig::saveFile
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorRig::clearDocumentModifiedFlag
+//
+// Clears the flag to note that the document has been not been modified since
+// the last save or load.
+//
+// Also clears any visual flags.
+//
+
+private void clearDocumentModifiedFlag() {
+
+    docModified = false;
+
+    //tell the editor frame to remove the visual flag
+    editorFrame.removeDocModifiedFlag(this);
+
+}//end of EditorRig::clearDocumentModifiedFlag
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorRig::flagDocumentAsModified
+//
+// Sets a flag to note that the document has been modified.
+// Adds an asterisk after the document's name in the pane's tab so the user
+// can tell which documents have been modified.
+//
+
+void flagDocumentAsModified() {
+
+    docModified = true;
+
+    //tell the editor frame to display a visual flag of some sort
+    editorFrame.addDocModifiedFlag(this);
+
+}//end of EditorRig::flagDocumentAsModified
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -838,6 +915,20 @@ public void actionPerformed(ActionEvent e) {
 protected class MyDocumentListener implements DocumentListener {
 
 
+    EditorRig editorRig;
+
+//-----------------------------------------------------------------------------
+// MyDocumentListener::MyDocumentListener (constructor)
+//
+
+public MyDocumentListener(EditorRig pEditorRig)
+{
+
+    editorRig = pEditorRig;
+
+}//end of MyDocumentListener::MyDocumentListener (constructor)
+//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 // MyDocumentListener::(various listener functions)
 //
@@ -848,20 +939,42 @@ protected class MyDocumentListener implements DocumentListener {
 
 public void insertUpdate(DocumentEvent e)
 {
+
+    flagDocumentAsModified(); //set a flag to show that a change has occurred
+
     displayEditInfo(e);
 }
 
 public void removeUpdate(DocumentEvent e)
 {
+
+    flagDocumentAsModified(); //set a flag to show that a change has occurred
+
     displayEditInfo(e);
 }
 
 public void changedUpdate(DocumentEvent e)
 {
+
+    flagDocumentAsModified(); //set a flag to show that a change has occurred
+
     displayEditInfo(e);
 }
 
 //end of MyDocumentListener::(various listener functions)
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// MyDocumentListener::flagDocumentAsModified
+//
+// Sets flag(s) and visual(s) to note that the document has been modified.
+//
+
+private void flagDocumentAsModified() {
+
+    editorRig.flagDocumentAsModified();
+
+}//end of MyDocumentListener::flagDocumentAsModified
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

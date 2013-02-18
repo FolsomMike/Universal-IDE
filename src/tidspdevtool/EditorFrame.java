@@ -38,6 +38,11 @@
 *  (each editor window needs its own undo goodies, extra work done
 *   here to keep those contexts separate -- stupid, no?)
 *
+* Reference
+*
+*  The Java Tutorials ~ TextComponentDemo.java
+*       JTextPane with undo/redo code, JSplitPane
+*
 * Open Source Policy:
 *
 * This source code is Public Domain and free to any interested party.  Any
@@ -116,7 +121,7 @@ public void loadFile(String pFileName, String pFullpath)
 {
 
     //create a scrolling editing pane with associated components
-    EditorRig editorRig = new EditorRig();
+    EditorRig editorRig = new EditorRig(this);
     editorRig.init(myUndoableEditListener);
 
     editorTabPane.addTab(pFileName, pFullpath, editorRig);
@@ -136,6 +141,83 @@ public void loadFile(String pFileName, String pFullpath)
                                                            loadFile(pFullpath);
 
 }//end of EditorFrame::loadFile
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::saveFile
+//
+// Saves a file to disk from the EditorRig on the currently selected tab.
+//
+// The file is saved to the same path from which it was loaded.
+//
+
+public void saveFile()
+{
+
+    //get the EditorRig component on the last tab in the list, which would be
+    //the one just created above
+    ((EditorRig)editorTabPane.getSelectedComponent()).saveFile();
+
+}//end of EditorFrame::saveFile
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::saveFileAs
+//
+// Saves a file to disk from the EditorRig on the currently selected tab.
+//
+// A file browser will be displayed to allow the user to specify the file
+// name and path.
+//
+
+public void saveFileAs()
+{
+
+    //wip mks -- add code
+
+}//end of EditorFrame::saveFileAs
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::addDocModifiedFlag
+//
+// Adds an asterisk to the name of the tab for pEditorRig. This shows the
+// user which files have been modified.
+//
+
+public void addDocModifiedFlag(EditorRig pEditorRig)
+{
+
+    int i = editorTabPane.indexOfComponent(pEditorRig);
+    String tabTitle = editorTabPane.getTitleAt(i);
+
+    if (!tabTitle.endsWith("*")){
+        editorTabPane.setTitleAt(i, tabTitle + "*");
+        editorTabPane.getTabComponentAt(i).revalidate();
+    }
+
+}//end of EditorFrame::addDocModifiedFlag
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::removeDocModifiedFlag
+//
+// Removes the asterisk in the name of the tab for pEditorRig. This shows the
+// user which files have not been modified.
+//
+
+public void removeDocModifiedFlag(EditorRig pEditorRig)
+{
+
+    int i = editorTabPane.indexOfComponent(pEditorRig);
+    String tabTitle = editorTabPane.getTitleAt(i);
+
+    if (tabTitle.endsWith("*")){
+        editorTabPane.setTitleAt(i, tabTitle.substring(0, tabTitle.length()-1));
+        editorTabPane.getTabComponentAt(i).revalidate();
+    }
+
+}//end of EditorFrame::removeDocModifiedFlag
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

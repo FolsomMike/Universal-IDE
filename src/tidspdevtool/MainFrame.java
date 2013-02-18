@@ -53,6 +53,7 @@ class MainFrame extends JFrame implements WindowListener, ActionListener,
     Settings settings;
     MainMenu mainMenu;
     Project project;
+    EditorFrame editorFrame;
 
     Chip chip;
 
@@ -173,7 +174,7 @@ public void init()
     int editorWindowX = projectFrame.getX() + projectFrame.getWidth();
 
     String title = "Editor";
-    EditorFrame editorFrame =
+    editorFrame =
         new EditorFrame(title, resizable, closeable, maximizable, iconifiable);
     editorFrame.init();
 
@@ -244,6 +245,13 @@ public void actionPerformed(ActionEvent e)
         project.newProject();
         return;
     }
+
+    //allow user to create a new project
+    if ("Save File".equals(e.getActionCommand())) {
+        editorFrame.saveFile();
+        return;
+    }
+
 
 }//end of MainFrame::actionPerformed
 //-----------------------------------------------------------------------------

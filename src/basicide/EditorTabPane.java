@@ -233,7 +233,8 @@ private void initMenu() {
 
 public boolean prepareToClose() {
 
-    boolean whatToDo = false;
+    //default to true in case no tabs are open
+    boolean whatToDo = true;
 
     int totalTabs = getTabCount();
 

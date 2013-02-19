@@ -132,7 +132,7 @@ public void init()
     //add the desktop panel to the main frame
     //the desktop panel handles child windows such that and IDE can be created
     getContentPane().add(desktop, BorderLayout.CENTER);
-    Settings.setSizes(this, 1024, 700);
+    Settings.setSizes(this, 1250, 730);
 
     //create a main menu, passing settings as the object to be installed as
     //the action and item listener for the menu

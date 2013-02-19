@@ -104,13 +104,13 @@ public void init(UndoableEditListener pUndoableEditListener)
 
     JScrollPane scrollPane = new JScrollPane(textPane);
     scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-    Settings.setSizes(scrollPane, 800, 535);
+    Settings.setSizes(scrollPane, 1000, 535);
 
     //create a panel to hold search tools and status messages
     toolPanel = new JPanel();
     toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.LINE_AXIS));
     toolPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-    Settings.setSizes(toolPanel, 800, 33);
+    Settings.setSizes(toolPanel, 1000, 33);
 
     //create a text search panel and add it to the tool panel
     textSearcher = new TextSearcher(textPane);

@@ -127,7 +127,9 @@ public void init()
     addComponentListener(this);
     addWindowListener(this);
 
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    //don't close automatically when user clicks close icon so we can control
+    //whether window closes or not (see windowClosing method)
+    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
     //add the desktop panel to the main frame
     //the desktop panel handles child windows such that and IDE can be created
@@ -353,8 +355,16 @@ public void changedUpdate(DocumentEvent ev)
 public void windowClosing(WindowEvent e)
 {
 
+    //allow the editor frame to clean up and save any modified documents
+    boolean okayToClose = editorFrame.prepareToClose();
+
     settings.saveFile();
     project.saveFile();
+
+    //if user did not cancel at any prompt and all okay, exit the program
+    if (okayToClose){
+        dispose();
+    }
 
 }//end of MainFrame::windowClosing
 //-----------------------------------------------------------------------------

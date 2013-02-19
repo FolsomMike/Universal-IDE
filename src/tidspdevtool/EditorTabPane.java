@@ -23,6 +23,7 @@
 package tidspdevtool;
 
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -214,6 +215,43 @@ private void initMenu() {
     //setJMenuBar(menuBar);
 
 }//end of EditorTabPane::initMenu
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::prepareToClose
+//
+// This function should be called when the editor is about to be closed. If
+// any document has been modified, the user will be given a chance to save it
+// or cancel the closing.
+//
+// User will be asked if it is desired to save each modified file.
+//
+// Returns true if the files have not been modified or if the user chooses to
+// close for each request (saving or not saving the file).
+// Returns false if the user chooses to cancel at any prompt.
+//
+
+public boolean prepareToClose() {
+
+    boolean whatToDo = false;
+
+    int totalTabs = getTabCount();
+
+    for(int i = 0; i < totalTabs; i++){
+
+       EditorRig rig = (EditorRig)getComponentAt(i);
+
+       //check for modified file and allow user to handle it
+       whatToDo = rig.prepareToClose();
+
+       //bail out and return false if user canceled at any save prompt
+       if (!whatToDo) {break;}
+
+    }
+
+    return(whatToDo);
+
+}//end of EditorFrame::prepareToClose
 //-----------------------------------------------------------------------------
 
 }//end of class EditorTabPane

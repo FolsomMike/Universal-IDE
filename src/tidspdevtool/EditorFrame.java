@@ -121,10 +121,12 @@ public void loadFile(String pFileName, String pFullpath)
 {
 
     //create a scrolling editing pane with associated components
-    EditorRig editorRig = new EditorRig(this);
+    EditorRig editorRig = new EditorRig(this, editorTabPane);
     editorRig.init(myUndoableEditListener);
 
+    //add a tab for the new file and make it selected
     editorTabPane.addTab(pFileName, pFullpath, editorRig);
+    editorTabPane.setSelectedComponent(editorRig);
 
     //Set up the menu bar.
 
@@ -135,10 +137,8 @@ public void loadFile(String pFileName, String pFullpath)
     mb.add(styleMenu);
     setJMenuBar(mb);
 
-    //get the EditorRig component on the last tab in the list, which would be
-    //the one just created above
-    ((EditorRig)editorTabPane.getComponentAt(editorTabPane.getTabCount()-1)).
-                                                           loadFile(pFullpath);
+    //load the file
+    editorRig.loadFile(pFullpath);
 
 }//end of EditorFrame::loadFile
 //-----------------------------------------------------------------------------
@@ -294,6 +294,19 @@ public void stateChanged(ChangeEvent e)
     }
 
 }//end of EditorFrame::stateChanged
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorFrame::prepareToClose
+//
+// See EditorTabPane.prepareToClose for details.
+//
+
+public boolean prepareToClose() {
+
+    return(editorTabPane.prepareToClose());
+
+}//end of EditorFrame::prepareToClose
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

@@ -42,6 +42,7 @@ import javax.swing.undo.*;
 public class EditorRig extends JPanel{
 
     EditorFrame editorFrame;
+    EditorTabPane editorTabPane;
 
     String fullPath; //full path and filename of file loaded into text pane
 
@@ -65,10 +66,10 @@ public class EditorRig extends JPanel{
 // EditorRig::EditorRig (constructor)
 //
 
-public EditorRig(EditorFrame pEditorFrame)
+public EditorRig(EditorFrame pEditorFrame, EditorTabPane pEditorTabPane)
 {
 
-    editorFrame = pEditorFrame;
+    editorFrame = pEditorFrame; editorTabPane = pEditorTabPane;
 
 }//end of EditorRig::EditorRig (constructor)
 //-----------------------------------------------------------------------------
@@ -560,6 +561,9 @@ public boolean prepareToClose() {
 
     //always allow close if document is unmodified
     if (!isDocumentModified()) {return(true);}
+
+    //make each modified file the selected tab before querying user
+    editorTabPane.setSelectedComponent(this);
 
     //if the document associated with this tab has been modified, ask user if
     //it is to be saved before the tab is closed

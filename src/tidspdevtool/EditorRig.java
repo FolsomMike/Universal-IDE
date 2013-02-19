@@ -545,6 +545,45 @@ public boolean isDocumentModified() {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+// EditorRig::prepareToClose
+//
+// This function should be called when the editor is about to be closed. If
+// the document has been modified, the user will be given a chance to save it
+// or cancel the closing.
+//
+// Returns true if the file has not been modified or if the user chooses to
+// close (saving or not saving).
+// Returns false if the user chooses to cancel.
+//
+
+public boolean prepareToClose() {
+
+    //always allow close if document is unmodified
+    if (!isDocumentModified()) {return(true);}
+
+    //if the document associated with this tab has been modified, ask user if
+    //it is to be saved before the tab is closed
+
+    int saveFileResponse = JOptionPane.showConfirmDialog(
+            this,
+            "The file has been modified. Save changes?",
+            "File Changed Warning",
+            JOptionPane.YES_NO_CANCEL_OPTION);
+
+    //do not save or close tab if user cancels
+    if (saveFileResponse == JOptionPane.CANCEL_OPTION) {return(false);}
+
+    //save the file if user chose "Yes"
+    if (saveFileResponse == JOptionPane.YES_OPTION){
+        saveFile();
+    }
+
+    return(true);
+
+}//end of EditorRig::prepareToClose
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // EditorRig::setJTextPaneFont
 //
 // Sets the font for the entire contents of pJTextPane.

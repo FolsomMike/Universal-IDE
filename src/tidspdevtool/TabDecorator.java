@@ -167,48 +167,13 @@ public void actionPerformed(ActionEvent e) {
 
     if (i == -1) {return;} //bail out if tab not found for some reason
 
+    //get access to the component handling the document for this tab
     EditorRig rig = (EditorRig)pane.getComponentAt(i);
 
-    //if the document associated with this tab has been modified, ask user if
-    //it is to be saved before the tab is closed
-
-    if (rig.isDocumentModified()){
-        int saveFileResponse = handleModifiedFile(rig);
-        //do not save or close tab if user cancels
-        if (saveFileResponse == JOptionPane.CANCEL_OPTION) {return;}
-        //save the file if user chose "Yes"
-        if (saveFileResponse == JOptionPane.YES_OPTION){
-            rig.saveFile();
-        }
-    }
-
-    pane.remove(i);
+    //all the rig to clean up, save the document etc.
+    if (rig.prepareToClose()) {pane.remove(i);}
 
 }// end of TabButton::actionPerformed
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-// TabButton::handleModifiedFile
-//
-// Warns the user that the file has been modified and asks if it should be
-// saved, not saved, or if the tab closure should be canceled.
-//
-// The EditorRig containing the document is passed via pRig.
-//
-// Returns JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, or
-// JOptionPane.CANCEL_OPTION depending on the user's response.
-//
-
-private int handleModifiedFile(EditorRig pRig) {
-
-
-    return (JOptionPane.showConfirmDialog(
-            pRig,
-            "The file has been modified. Save changes?",
-            "File Changed Warning",
-            JOptionPane.YES_NO_CANCEL_OPTION));
-
-}// end of TabButton::handleModifiedFile
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

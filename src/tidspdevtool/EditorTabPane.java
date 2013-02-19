@@ -141,7 +141,7 @@ public void addTab(String pFileName, String pFullPath, JPanel pPanel) {
 
 private void initTabComponent(int i) {
 
-    pane.setTabComponentAt(i, new ButtonTab(pane));
+    pane.setTabComponentAt(i, new TabDecorator(pane));
 
 }//end of EditorTabPane::initTabComponent
 //-----------------------------------------------------------------------------

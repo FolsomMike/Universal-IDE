@@ -67,7 +67,7 @@ import javax.swing.undo.*;
 //
 //
 
-class EditorFrame extends JInternalFrame implements ChangeListener
+public class EditorFrame extends JInternalFrame implements ChangeListener
 {
 
     EditorTabPane editorTabPane;
@@ -200,13 +200,13 @@ public void addDocModifiedFlag(EditorRig pEditorRig)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// EditorFrame::removeDocModifiedFlag
+// EditorFrame::removeDocModifiedMarker
 //
 // Removes the asterisk in the name of the tab for pEditorRig. This shows the
 // user which files have not been modified.
 //
 
-public void removeDocModifiedFlag(EditorRig pEditorRig)
+public void removeDocModifiedMarker(EditorRig pEditorRig)
 {
 
     int i = editorTabPane.indexOfComponent(pEditorRig);
@@ -217,7 +217,7 @@ public void removeDocModifiedFlag(EditorRig pEditorRig)
         editorTabPane.getTabComponentAt(i).revalidate();
     }
 
-}//end of EditorFrame::removeDocModifiedFlag
+}//end of EditorFrame::removeDocModifiedMarker
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

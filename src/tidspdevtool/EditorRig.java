@@ -59,7 +59,7 @@ public class EditorRig extends JPanel{
     TextSearcher textSearcher;
     HashMap<Object, Action> actions;
 
-    boolean docModified; //true if the document has been modified
+    private boolean docModified; //true if the document has been modified
 
 //-----------------------------------------------------------------------------
 // EditorRig::EditorRig (constructor)
@@ -462,7 +462,7 @@ public void loadFile(String pFilepath)
 
     //when the file is loaded, the document listeners fire and the modified
     //flag gets set -- unset it as the document is yet unchanged by the user
-    editorFrame.removeDocModifiedFlag(this);
+    clearDocumentModifiedFlag();
 
 }//end of EditorRig::loadFile
 //-----------------------------------------------------------------------------
@@ -470,7 +470,7 @@ public void loadFile(String pFilepath)
 //-----------------------------------------------------------------------------
 // EditorRig::saveFile
 //
-// Saves a file from textPane to disk.
+// Saves a file from textPane to disk and clears the docModified flag.
 //
 
 public void saveFile()
@@ -507,7 +507,7 @@ private void clearDocumentModifiedFlag() {
     docModified = false;
 
     //tell the editor frame to remove the visual flag
-    editorFrame.removeDocModifiedFlag(this);
+    editorFrame.removeDocModifiedMarker(this);
 
 }//end of EditorRig::clearDocumentModifiedFlag
 //-----------------------------------------------------------------------------
@@ -528,6 +528,20 @@ void flagDocumentAsModified() {
     editorFrame.addDocModifiedFlag(this);
 
 }//end of EditorRig::flagDocumentAsModified
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// EditorRig::isDocumentModified
+//
+// Returns the docModified flag which will be true if the document has been
+// modified since the last load or save.
+//
+
+public boolean isDocumentModified() {
+
+    return(docModified);
+
+}//end of EditorRig::isDocumentModified
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -618,6 +632,8 @@ public void findTabContainingDoc(JTextPane jtp, Font font, Color c) {
 
 }//end of EditorRig::findTabContaingingDoc
 //-----------------------------------------------------------------------------
+
+/*
 
 //-----------------------------------------------------------------------------
 // EditorRig::findText
@@ -742,6 +758,9 @@ try {
 
 }//end of EditorRig::findText
 //-----------------------------------------------------------------------------
+
+*/
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

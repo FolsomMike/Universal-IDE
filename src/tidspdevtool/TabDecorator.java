@@ -162,13 +162,53 @@ public void init() {
 
 public void actionPerformed(ActionEvent e) {
 
+    //get index of tab decorated with this button
     int i = pane.indexOfTabComponent(TabDecorator.this);
 
-    if (i != -1) {
-        pane.remove(i);
+    if (i == -1) {return;} //bail out if tab not found for some reason
+
+    EditorRig rig = (EditorRig)pane.getComponentAt(i);
+
+    //if the document associated with this tab has been modified, ask user if
+    //it is to be saved before the tab is closed
+
+    if (rig.isDocumentModified()){
+        int saveFileResponse = handleModifiedFile(rig);
+        //do not save or close tab if user cancels
+        if (saveFileResponse == JOptionPane.CANCEL_OPTION) {return;}
+        //save the file if user chose "Yes"
+        if (saveFileResponse == JOptionPane.YES_OPTION){
+            rig.saveFile();
+        }
     }
 
+    pane.remove(i);
+
 }// end of TabButton::actionPerformed
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TabButton::handleModifiedFile
+//
+// Warns the user that the file has been modified and asks if it should be
+// saved, not saved, or if the tab closure should be canceled.
+//
+// The EditorRig containing the document is passed via pRig.
+//
+// Returns JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, or
+// JOptionPane.CANCEL_OPTION depending on the user's response.
+//
+
+private int handleModifiedFile(EditorRig pRig) {
+
+
+    return (JOptionPane.showConfirmDialog(
+            pRig,
+            "The file has been modified. Save changes?",
+            "File Changed Warning",
+            JOptionPane.YES_NO_CANCEL_OPTION));
+
+}// end of TabButton::handleModifiedFile
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -208,7 +248,7 @@ protected void paintComponent(Graphics g) {
     if (getModel().isRollover()) {
         g2.setColor(Color.MAGENTA);
     }
-    
+
     int delta = 6;
     g2.drawLine(delta, delta, getWidth() - delta - 1, getHeight() - delta - 1);
     g2.drawLine(getWidth() - delta - 1, delta, delta, getHeight() - delta - 1);

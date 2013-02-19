@@ -44,7 +44,6 @@ public class EditorTabPane extends JTabbedPane{
     ChangeListener lChangeListener;
 
     private final int tabNumber = 5;
-    JTabbedPane pane;
     private JMenuItem tabComponentsItem;
     private JMenuItem scrollLayoutItem;
 
@@ -77,16 +76,11 @@ EditorTabPane(ChangeListener pChangeListener)
 public void init()
 {
 
-    pane = this;
-
     setName("Editor Tab Panel");
     addChangeListener(lChangeListener);
-
     initMenu();
-
-    pane.removeAll();
-
-    pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+    removeAll();
+    setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
 }//end of EditorTabPane::init
 //-----------------------------------------------------------------------------
@@ -101,18 +95,18 @@ public void init()
 
 public void debugTest() {
 
-    pane.removeAll();
+    removeAll();
 
     for (int i = 0; i < tabNumber; i++) {
         String title = "Tab " + i;
         //adds a pane with a label on it
-        pane.add(title, new JLabel(title));
+        add(title, new JLabel(title));
         //installs a component to draw the tab's title and icons
         initTabComponent(i);
         }
 
     tabComponentsItem.setSelected(true);
-    pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+    setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
     scrollLayoutItem.setSelected(false);
 
 }//end of EditorTabPane::debugTest
@@ -128,7 +122,7 @@ public void debugTest() {
 public void addTab(String pFileName, String pFullPath, JPanel pPanel) {
 
     addTab(pFileName, null, pPanel, pFullPath);
-    initTabComponent(pane.getTabCount()-1);
+    initTabComponent(getTabCount()-1);
 
 }//end of EditorTabPane::addTab
 //-----------------------------------------------------------------------------
@@ -141,7 +135,7 @@ public void addTab(String pFileName, String pFullPath, JPanel pPanel) {
 
 private void initTabComponent(int i) {
 
-    pane.setTabComponentAt(i, new TabDecorator(pane));
+    setTabComponentAt(i, new TabDecorator(this));
 
 }//end of EditorTabPane::initTabComponent
 //-----------------------------------------------------------------------------
@@ -166,14 +160,14 @@ private void initMenu() {
 
         new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < pane.getTabCount(); i++) {
+                for (int i = 0; i < getTabCount(); i++) {
                     if (tabComponentsItem.isSelected()) {
                         //installs a component to draw the tab's title and icons
                         initTabComponent(i);
                     }
                     else {
                         //sets JTabbedPane class to draw the tab title
-                        pane.setTabComponentAt(i, null);
+                        setTabComponentAt(i, null);
                     }
                 }
             }
@@ -187,11 +181,11 @@ private void initMenu() {
     scrollLayoutItem.addActionListener(
         new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (pane.getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT) {
-                    pane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+                if (getTabLayoutPolicy() == JTabbedPane.WRAP_TAB_LAYOUT) {
+                    setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
                 }
                 else {
-                    pane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+                    setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
                 }
             }
         }

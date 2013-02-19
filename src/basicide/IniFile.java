@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: IniFile.java
+* Title: Universal IDE - IniFile.java
 * Author: Mike Schoonover
 * Date: 11/17/03
 *
@@ -18,7 +18,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.Color;
 import java.io.*;

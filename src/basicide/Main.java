@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Main Source File
+* Title: Universal IDE - Main.java
 * Author: Mike Schoonover
 * Date: 06/4/11
 *
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 //-----------------------------------------------------------------------------
 // class MainWindow

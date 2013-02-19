@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - TabDecorator.java File
+* Title: Universal IDE - TabDecorator.java
 * Author: Mike Schoonover
 * Date: 06/26/11
 *
@@ -16,7 +16,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.*;
 import java.awt.event.*;

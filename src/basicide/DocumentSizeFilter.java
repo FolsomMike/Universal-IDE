@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - DocumentSizeFilter.java File
+* Title: Universal IDE - DocumentSizeFilter.java
 * Author: Mike Schoonover
 * Date: 06/4/11
 *
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.Toolkit;
 import javax.swing.text.*;

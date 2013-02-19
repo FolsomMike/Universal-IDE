@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - ProjectFrame.java File
+* Title: Universal IDE - ProjectFrame.java
 * Author: Mike Schoonover
 * Date: 06/13/11
 *
@@ -16,7 +16,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.*;
 import java.awt.event.*;

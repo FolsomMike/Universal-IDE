@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Main Source File
+* Title: Universal IDE - InstructionSet.java
 * Author: Mike Schoonover
 * Date: 2/3/13
 *
@@ -16,7 +16,7 @@
 *
 */
 
-package DSPSimulation;
+package dspsimulation;
 
 import java.util.ArrayList;
 

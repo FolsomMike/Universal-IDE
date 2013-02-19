@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Settings.java File
+* Title: Universal IDE - Settings.java
 * Author: Mike Schoonover
 * Date: 06/25/11
 *
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 
 import java.awt.*;

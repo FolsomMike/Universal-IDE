@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - EditorFrame.java File
+* Title: Universal IDE - EditorFrame.java
 * Author: Mike Schoonover
 * Date: 06/4/11
 *
@@ -52,7 +52,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.*;
 import java.awt.event.*;

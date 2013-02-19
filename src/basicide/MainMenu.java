@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - MainMenu.java
+* Title: Universal IDE - MainMenu.java
 * Author: Mike Schoonover
 * Date: 2/5/13
 *
@@ -16,13 +16,15 @@
 *
 */
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 
 //-----------------------------------------------------------------------------
@@ -42,6 +44,10 @@ class MainMenu extends JMenuBar
     JMenuItem saveProject;
     JMenuItem newProject;
     JMenuItem exit;
+
+    JMenu dspMenu;
+
+    JMenuItem assembleProject;
 
 
 //-----------------------------------------------------------------------------
@@ -84,6 +90,8 @@ public void init()
     //File/Save File menu item
     saveFile = new JMenuItem("Save File");
     saveFile.setMnemonic(KeyEvent.VK_S);
+    saveFile.setAccelerator(KeyStroke.getKeyStroke(
+                                         KeyEvent.VK_S, InputEvent.CTRL_MASK));
     saveFile.setToolTipText("Save File");
     saveFile.addActionListener(actionListener);
     fileMenu.add(saveFile);
@@ -101,6 +109,18 @@ public void init()
     newProject.setToolTipText("New Project");
     newProject.addActionListener(actionListener);
     fileMenu.add(newProject);
+
+    //DSP menu
+    dspMenu = new JMenu("DSP");
+    dspMenu.setToolTipText("DSP Tools");
+    add(dspMenu);
+
+    //DSP/Assemble Project menu item
+    assembleProject = new JMenuItem("Assemble Project");
+    assembleProject.setToolTipText(
+                                "Assembles the source files in the project.");
+    assembleProject.addActionListener(actionListener);
+    dspMenu.add(assembleProject);
 
 }//end of MainMenu::init
 //-----------------------------------------------------------------------------

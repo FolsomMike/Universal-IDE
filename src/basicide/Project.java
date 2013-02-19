@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Project.java File
+* Title: Universal IDE - Project.java File
 * Author: Mike Schoonover
 * Date: 06/25/11
 *
@@ -17,7 +17,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 
 import java.io.*;

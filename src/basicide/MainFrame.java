@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Main Source File
+* Title: Universal IDE - MainFrame.java
 * Author: Mike Schoonover
 * Date: 2/3/13
 *
@@ -14,12 +14,12 @@
 *
 */
 
-package tidspdevtool;
+package basicide;
 
 //-----------------------------------------------------------------------------
 
-import DSPSimulation.Chip;
-import SpecificChips.TMS320VC5441;
+import dspsimulation.Chip;
+import specificchips.TMS320VC5441;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagLayout;

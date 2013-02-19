@@ -1,15 +1,11 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Main Source File
+* Title: Universal IDE - TMS320VC5441.java
 * Author: Mike Schoonover
 * Date: 2/3/13
 *
 * Purpose:
 *
-* This class provides base functionality for a chip to be simulated. Each type
-* of chip should be a sub-class of this base class.
-*
-* This base class provides a RegisterSet, an InstructionSet, and MemorySet
-* objects for handling a list of each type.
+* This class provides base functionality for a TMS320VC5441 to be simulated.
 *
 * Open Source Policy:
 *
@@ -18,69 +14,61 @@
 *
 */
 
-package DSPSimulation;
+package specificchips;
+
+import dspsimulation.Chip;
 
 //-----------------------------------------------------------------------------
-// class Chip
+// class TMS320VC5441
 //
 
-public class Chip
+public class TMS320VC5441 extends Chip
 {
 
-    //the name and abbreviated name for the chip
-    String name, shortName;
-
-    RegisterSet registerSet;
-    InstructionSet instructionSet;
-
 //-----------------------------------------------------------------------------
-// Chip::Chip (constructor)
+// TMS320VC5441::TMS320VC5441 (constructor)
 //
-// Creates a basic chip with name pName and abbreviated name pShortName.
+// Creates a TMS320VC5441 simulation object.
 //
 
-public Chip(String pName, String pShortName)
+public TMS320VC5441()
 {
 
-    name = pName; shortName = pShortName;
+    super("TMS320VC5441", "'5441");
 
-}//end of Chip::Chip (constructor)
+}//end of TMS320VC5441::TMS320VC5441 (constructor)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Chip::init
+// TMS320VC5441::init
 //
 // Initializes new objects. Should be called immediately after instantiation.
 //
-// The base class should override this method to provide extended setup -- it
-// should call the init method here in the base class before peforming its own
-// setup.
-//
 
+@Override
 public void init()
 {
 
-    registerSet = new RegisterSet();
-    instructionSet = new InstructionSet();
+    //allow base class to set up first
+    super.init();
 
-}//end of Chip::init
+}//end of TMS320VC5441::init
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Chip::execute
+// TMS320VC5441::execute
 //
 // This method performs the functions expected of the instruction and operands
 // in pFullInstruction.
 //
-// Each sub-class should override this method to provide unique functionality.
-//
 
+@Override
 public void execute(String pFullInstruction)
 {
 
-}//end of Chip::execute
+}//end of TMS320VC5441::execute
 //-----------------------------------------------------------------------------
 
-}//end of class Chip
+}//end of class TMS320VC5441
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

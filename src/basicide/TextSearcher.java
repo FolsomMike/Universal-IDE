@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - TextSearcher.java File
+* Title: Universal IDE - TextSearcher.java
 * Author: Mike Schoonover
 * Date: 2/10/13
 *
@@ -21,7 +21,7 @@
 *
 */
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

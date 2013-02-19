@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - EditorTabPane.java File
+* Title: Universal IDE - EditorTabPane.java
 * Author: Mike Schoonover
 * Date: 06/26/11
 *
@@ -20,7 +20,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 
 import java.awt.Component;

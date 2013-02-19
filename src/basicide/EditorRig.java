@@ -1,5 +1,5 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - EditorRig.java File
+* Title: Universal IDE - EditorRig.java
 * Author: Mike Schoonover
 * Date: 06/26/11
 *
@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 
-package tidspdevtool;
+package basicide;
 
 import java.awt.*;
 import java.awt.event.*;

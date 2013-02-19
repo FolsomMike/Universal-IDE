@@ -1,11 +1,12 @@
 /******************************************************************************
-* Title: TI DSP Dev Tool - Main Source File
+* Title: Universal IDE - RegisterSet.java
 * Author: Mike Schoonover
 * Date: 2/3/13
 *
 * Purpose:
 *
-* This class provides base functionality for a TMS320VC5441 to be simulated.
+* This class manages a collection of registers for a simulated DSP.
+* The instructions are added to a list in this class.
 *
 * Open Source Policy:
 *
@@ -14,61 +15,60 @@
 *
 */
 
-package SpecificChips;
-
-import DSPSimulation.Chip;
+package dspsimulation;
 
 //-----------------------------------------------------------------------------
-// class TMS320VC5441
+
+import java.util.ArrayList;
+
+// class RegisterSet
 //
 
-public class TMS320VC5441 extends Chip
+class RegisterSet
 {
 
+    ArrayList list;
+
 //-----------------------------------------------------------------------------
-// TMS320VC5441::TMS320VC5441 (constructor)
-//
-// Creates a TMS320VC5441 simulation object.
+// RegisterSet::RegisterSet (constructor)
 //
 
-public TMS320VC5441()
+RegisterSet()
 {
 
-    super("TMS320VC5441", "'5441");
-
-}//end of TMS320VC5441::TMS320VC5441 (constructor)
+}//end of RegisterSet::RegisterSet (constructor)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// TMS320VC5441::init
+// RegisterSet::init
 //
 // Initializes new objects. Should be called immediately after instantiation.
 //
 
-@Override
 public void init()
 {
 
-    //allow base class to set up first
-    super.init();
+    //create the list to hold the registers
+    list = new ArrayList();
 
-}//end of TMS320VC5441::init
+}//end of RegisterSet::init
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// TMS320VC5441::execute
+// RegisterSet::addRegister
 //
-// This method performs the functions expected of the instruction and operands
-// in pFullInstruction.
+// Adds register pNew to the collection.
 //
 
-@Override
-public void execute(String pFullInstruction)
+public void addRegister(Register pNew)
 {
 
-}//end of TMS320VC5441::execute
+    list.add(pNew);
+
+}//end of RegisterSet::addRegister
 //-----------------------------------------------------------------------------
 
-}//end of class TMS320VC5441
+
+}//end of class RegisterSet
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

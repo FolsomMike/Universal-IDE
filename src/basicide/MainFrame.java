@@ -18,8 +18,9 @@ package basicide;
 
 //-----------------------------------------------------------------------------
 
+import codehandler.CodeHandler;
+import codehandler.TMS320VC5441CodeHandler;
 import dspsimulation.Chip;
-import specificchips.TMS320VC5441;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridBagLayout;
@@ -30,12 +31,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.text.DecimalFormat;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import specificchips.TMS320VC5441;
 
 //-----------------------------------------------------------------------------
 // class MainFrame
@@ -55,7 +58,9 @@ class MainFrame extends JFrame implements WindowListener, ActionListener,
     Project project;
     EditorFrame editorFrame;
 
+    CodeHandler codeHandler;
     Chip chip;
+
 
     JDialog measureDialog;
     GridBagLayout gridBag;
@@ -193,6 +198,9 @@ public void init()
 
     desktop.add(editorFrame);
 
+    //initialize custom handlers for different types of data
+    initCustomHandlers();
+
     //force layout of GUI
     pack();
 
@@ -227,6 +235,22 @@ private void loadSettings()
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+// MainFrame::initCustomHandlers
+//
+// Creates special handlers for different types of projects and files.
+//
+
+private void initCustomHandlers()
+{
+
+    codeHandler =
+         new TMS320VC5441CodeHandler(mainMenu, settings.getProjectPath(), this);
+    codeHandler.init();
+
+}//end of MainFrame::initCustomHandlers
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // MainFrame::actionPerformed
 //
 // Responds to button events, menu events, etc.
@@ -239,6 +263,7 @@ public void actionPerformed(ActionEvent e)
     //allow user to choose a different project and then load it
     if ("Load Project".equals(e.getActionCommand())) {
         project.chooseProject();
+        codeHandler.setProjectPath(settings.getProjectPath());
         return;
     }
 
@@ -254,8 +279,33 @@ public void actionPerformed(ActionEvent e)
         return;
     }
 
+    //load the file specified in the action command
+    if (e.getActionCommand().startsWith("Load file: ")) {
+        loadFileIntoTab(e.getActionCommand().substring(11));
+        return;
+    }
 
 }//end of MainFrame::actionPerformed
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// MainFrame::loadFileIntoTab
+//
+// Loads the file specified by pFullFilePath into a tab.
+//
+
+public void loadFileIntoTab(String pFullFilePath)
+{
+
+    File file = new File(pFullFilePath);
+
+    //do nothing if the file does not exist
+    if (!file.exists()) {return;}
+
+    //load the file into an editor pane
+    settings.editorFrame.loadFile(file.getName(), file.getPath());
+
+}//end of MainFrame::loadFileIntoTab
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

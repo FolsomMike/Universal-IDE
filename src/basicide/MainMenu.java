@@ -45,11 +45,6 @@ class MainMenu extends JMenuBar
     JMenuItem newProject;
     JMenuItem exit;
 
-    JMenu dspMenu;
-
-    JMenuItem assembleProject;
-
-
 //-----------------------------------------------------------------------------
 // MainMenu::MainMenu (constructor)
 //
@@ -109,18 +104,6 @@ public void init()
     newProject.setToolTipText("New Project");
     newProject.addActionListener(actionListener);
     fileMenu.add(newProject);
-
-    //DSP menu
-    dspMenu = new JMenu("DSP");
-    dspMenu.setToolTipText("DSP Tools");
-    add(dspMenu);
-
-    //DSP/Assemble Project menu item
-    assembleProject = new JMenuItem("Assemble Project");
-    assembleProject.setToolTipText(
-                                "Assembles the source files in the project.");
-    assembleProject.addActionListener(actionListener);
-    dspMenu.add(assembleProject);
 
 }//end of MainMenu::init
 //-----------------------------------------------------------------------------

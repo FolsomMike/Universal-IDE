@@ -5,8 +5,8 @@
 *
 * Purpose:
 *
-* This program compiles, links, and simulates Texas Instruments (T)(R) DSP
-* code.
+* This program provides a basic IDE which can be extended to handle various
+* projects which utilize multiple files, such as a compiler or assembler.
 *
 * 6/4/11
 *  Handles TI TMS320C5441 DSP.

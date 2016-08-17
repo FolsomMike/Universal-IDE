@@ -40,7 +40,8 @@ public class CodeHandler implements ActionListener
     JMenuBar menuBar;
     JMenu dspMenu;
     JMenuItem assembleProject;
-
+    JMenuItem copyHexFileToTargetFolder;
+    
     ActionListener actionListener;
 
 //-----------------------------------------------------------------------------
@@ -95,11 +96,18 @@ public void addMenuToMenuBar()
     menuBar.add(dspMenu);
 
     //DSP/Assemble Project menu item
+    
     assembleProject = new JMenuItem("Assemble Project");
     assembleProject.setToolTipText(
                                 "Assembles the source files in the project.");
     assembleProject.addActionListener(this);
     dspMenu.add(assembleProject);
+
+    copyHexFileToTargetFolder = new JMenuItem("Copy Hex File to Target");
+    copyHexFileToTargetFolder.setToolTipText(
+      "Copies the assembled hex file to a folder where it can be accessed.");
+    copyHexFileToTargetFolder.addActionListener(this);
+    dspMenu.add(copyHexFileToTargetFolder);
 
 }//end of CodeHandler::addMenuToMenuBar
 //-----------------------------------------------------------------------------
@@ -135,6 +143,12 @@ public void actionPerformed(ActionEvent e)
         return;
     }
 
+    //allow user to choose a different project and then load it
+    if ("Copy Hex File to Target".equals(e.getActionCommand())) {
+        copyHexFileToTargetFolder();
+        return;
+    }
+        
 }//end of CodeHandler::actionPerformed
 //-----------------------------------------------------------------------------
 
@@ -150,6 +164,20 @@ public void assembleProject()
 
 
 }//end of CodeHandler::assembleProject
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// CodeHandler::copyHexFileToTargetFolder
+//
+// Child classes should override this method to provide appropriate processing.
+//
+
+
+public void copyHexFileToTargetFolder()
+{
+
+
+}//end of CodeHandler::copyHexFileToTargetFolder
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------

@@ -22,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuBar;
@@ -36,7 +35,9 @@ public class TMS320VC5441CodeHandler extends CodeHandler
 
     String assembleBatchFilename;
     String assembleResultsFilename;
-
+    String copyHexFileBatchFilename;
+    String copyHexFileResultsFilename;
+    
 //-----------------------------------------------------------------------------
 // TMS320VC5441CodeHandler::TMS320VC5441CodeHandler (constructor)
 //
@@ -67,10 +68,13 @@ public void init()
 
     //wip mks -- read these from the project file? allow user to set them?
     //the batch files should be in the project folder
+    
     assembleBatchFilename = "aa Assemble Capulin UT DSP.bat";
     assembleResultsFilename = "results.txt";
 
-
+    copyHexFileBatchFilename = "ab Copy Hex File to Chart Program.bat";
+    copyHexFileResultsFilename = "ab Copy Hex File Results.txt";
+    
 }//end of TMS320VC5441CodeHandler::init
 //-----------------------------------------------------------------------------
 
@@ -105,15 +109,48 @@ public void actionPerformed(ActionEvent e)
 //-----------------------------------------------------------------------------
 // TMS320VC5441CodeHandler::assembleProject
 //
-// Child classes should override this method to provide appropriate processing.
+// Assembles the source code and displays the status results page.
 //
 
 @Override
 public void assembleProject()
 {
 
+    runBatchFileAndDisplayResults(
+                               assembleResultsFilename, assembleBatchFilename);
+    
+}//end of TMS320VC5441CodeHandler::assembleProject
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TMS320VC5441CodeHandler::copyHexFileToTargetFolder
+//
+// Assembles the source code and displays the status results page.
+//
+
+@Override
+public void copyHexFileToTargetFolder()
+{
+
+    runBatchFileAndDisplayResults(
+                         copyHexFileResultsFilename, copyHexFileBatchFilename);
+    
+}//end of TMS320VC5441CodeHandler::copyHexFileToTargetFolder
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// TMS320VC5441CodeHandler::runBatchFileAndDisplayResults
+//
+// Deletes any existing results file named pResultsFilename, executes batch
+// file named pBatchFilename, and loads the new results file.
+//
+
+public void runBatchFileAndDisplayResults(String pResultsFilename,
+                                                        String pBatchFilename)
+{
+
     String resultsFullPath =
-                    projectPath + File.separator + assembleResultsFilename;
+                    projectPath + File.separator + pResultsFilename;
 
     File resultsFile = new File(resultsFullPath);
 
@@ -122,13 +159,12 @@ public void assembleProject()
     //this will delete the file even if it is set read-only
     if (resultsFile.exists() && !resultsFile.delete()){
         CodeHandler.errorMsg(
-             "Cannot delete " + assembleResultsFilename +
-                                            ". Assemble operation aborted.");
+             "Cannot delete " + pResultsFilename + ". Operation aborted.");
         return;
     }
 
     //run the batch file to perform the assembly
-    runAssemblerBatchFile();
+    runProjectBatchFile(pBatchFilename);
 
     //alert user if the assembly process did not create a results file
     if(!resultsFile.exists()){
@@ -141,13 +177,13 @@ public void assembleProject()
     actionListener.actionPerformed(new ActionEvent(this,
             ActionEvent.ACTION_PERFORMED, "Load file: " + resultsFullPath));
 
-}//end of TMS320VC5441CodeHandler::assembleProject
+}//end of TMS320VC5441CodeHandler::runBatchFileAndDisplayResults
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// TMS320VC5441CodeHandler::runAssemblerBatchFile
+// TMS320VC5441CodeHandler::runProjectBatchFile
 //
-// Runs the batch file assembleBatchFilename to perform the assembly process.
+// Runs the batch file pBatchFilename.
 //
 // Reference:
 //
@@ -184,7 +220,7 @@ public void assembleProject()
 //  }
 //
 
-private void runAssemblerBatchFile()
+private void runProjectBatchFile(String pBatchFilename)
 {
 
     try {
@@ -199,10 +235,10 @@ private void runAssemblerBatchFile()
         //there are quotes inside of quotes, but that works
 
         String command = "cmd /c \"cd \"" + projectPath + "\"";
-        command += " && \"" + assembleBatchFilename + "\"\"";
+        command += " && \"" + pBatchFilename + "\"\"";
 
         //execute the batch file and wait for it to finish to make sure there
-        //is time for the result file to be created
+        //is time for the result file to be created (if there is one)
         Process p = rt.exec(command);
         p.waitFor();
 
@@ -215,7 +251,7 @@ private void runAssemblerBatchFile()
            TMS320VC5441CodeHandler.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-}//end of TMS320VC5441CodeHandler::runAssemblerBatchFile
+}//end of TMS320VC5441CodeHandler::runProjectBatchFile
 //-----------------------------------------------------------------------------
 
 }//end of class TMS320VC5441CodeHandler
